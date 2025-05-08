@@ -31,7 +31,7 @@ export default class NewPage {
         <div class="new-form__container">
           <form id="new-form" class="new-form">
             <div class="form-control">
-              <label for="title-input" class="new-form__title__title">Tambah Cerita</label>
+              <label for="title-input" class="new-form__title__title">Judul Cerita</label>
   
               <div class="new-form__title__container">
                 <input
@@ -45,7 +45,7 @@ export default class NewPage {
             </div>
   
             <div class="form-control">
-              <label for="description-input" class="new-form__description__title">Deskripsi Cerita Anda</label>
+              <label for="description-input" class="new-form__description__title">Deskripsikan Cerita Anda</label>
   
               <div class="new-form__description__container">
                 <textarea
@@ -218,36 +218,41 @@ export default class NewPage {
     });
   }
 
-    async initialMap() {
-    this.#map = await Map.build('#map', {
-      zoom: 15,
-      locate: true,
-    });
-
-    // Preparing marker for select coordinate
-    const centerCoordinate = this.#map.getCenter();
-  
-    this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
-  
-    const draggableMarker = this.#map.addMarker(
-      [centerCoordinate.latitude, centerCoordinate.longitude],
-      { draggable: 'true' },
-    );
-    draggableMarker.addEventListener('move', (event) => {
-      const coordinate = event.target.getLatLng();
-      this.#updateLatLngInput(coordinate.lat, coordinate.lng);
-    });
-
-    this.#map.addMapEventListener('click', (event) => {
-      draggableMarker.setLatLng(event.latlng);
-      // Keep center with user view
-      event.sourceTarget.flyTo(event.latlng);
-    });
+  #updateLatLngInput(latitude, longitude) {
+    const latInput = this.#form.elements.namedItem('latitude');
+    const lngInput = this.#form.elements.namedItem('longitude');
+    latInput.value = latitude;
+    lngInput.value = longitude;
   }
 
-  #updateLatLngInput(latitude, longitude) {
-    this.#form.elements.namedItem('latitude').value = latitude;
-    this.#form.elements.namedItem('longitude').value = longitude;
+  async initialMap() {
+    try {
+      this.#map = await Map.build('#map', {
+        zoom: 15,
+        locate: true
+      });
+  
+      const centerCoordinate = this.#map.getCenter();
+      this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
+  
+      const draggableMarker = this.#map.addMarker(
+        [centerCoordinate.latitude, centerCoordinate.longitude],
+        { draggable: true }
+      );
+  
+      draggableMarker.addEventListener('move', (event) => {
+        const coordinate = event.target.getLatLng();
+        this.#updateLatLngInput(coordinate.lat, coordinate.lng);
+      });
+  
+      this.#map.addMapEventListener('click', (event) => {
+        draggableMarker.setLatLng(event.latlng);
+        this.#map.changeCamera(event.latlng);
+      });
+  
+    } catch (error) {
+      console.error('Gagal inisialisasi peta:', error);
+    }
   }
 
   async #setupCamera() {

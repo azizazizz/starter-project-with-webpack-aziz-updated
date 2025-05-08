@@ -78,9 +78,8 @@ export default class Map {
   constructor(selector, options = {}) {
     this.#zoom = options.zoom ?? this.#zoom;
  
-    const tileOsm = tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+    const tileOsm = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     });
  
     this.#map = map(document.querySelector(selector), {
