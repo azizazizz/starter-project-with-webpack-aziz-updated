@@ -10,7 +10,6 @@ export default class NewPage {
   #presenter;
   #form;
   #camera;
-  #takePictureHandler; // Declare the private field
   #takenDocumentations = [];
   #map = null;
 
@@ -21,7 +20,7 @@ export default class NewPage {
           <div class="container">
             <h1 class="new-story__header__title">Tambah Cerita</h1>
             <p class="new-story__header__description">
-              Silakan lengkapi isi deskripsi cerita anda.<br>
+              Silahkan lengkapi isi deskripsi cerita anda.<br>
             </p>
           </div>
         </div>
@@ -79,24 +78,22 @@ export default class NewPage {
                   </button>
                 </div>
                 <div id="camera-container" class="new-form__camera__container">
+                  <select id="camera-select" class="camera-select"></select>
                   <video id="camera-video" class="new-form__camera__video">
                     Video stream not available.
                   </video>
                   <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
-  
                   <div class="new-form__camera__tools">
-                    <div class="new-form__camera__tools_buttons">
-                      <button id="camera-take-button" class="btn" type="button">
-                        Ambil Gambar
-                      </button>
-                    </div>
+                    <button id="camera-take-button" class="btn" type="button">
+                      Ambil Gambar
+                    </button>
                   </div>
                 </div>
                 <ul id="documentations-taken-list" class="new-form__documentations__outputs"></ul>
               </div>
             </div>
             <div class="form-control">
-              <div class="new-form__location__title">Silahkan Masukkan Lokasi. Geser marker, atau klik lokasi saat ini.</div>
+              <div class="new-form__location__title">Silahkan Masukkan Lokasi. Geser marker, atau klik gunakan lokasi saya.</div>
   
               <div class="new-form__location__container">
                 <div class="new-form__location__map__container">
@@ -109,10 +106,10 @@ export default class NewPage {
                 </div>
               </div>
               <div class="new-form__location__tools">
-              <button id="use-my-location" type="button" class="btn btn-outline">
-                <i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya
-              </button>
-            </div>
+                <button id="use-my-location" type="button" class="btn btn-outline">
+                  <i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya
+                </button>
+              </div>
             </div>
             <div class="form-buttons">
               <span id="submit-button-container">
@@ -127,11 +124,8 @@ export default class NewPage {
   }
 
   async cleanup() {
-    // Hentikan kamera
-    if (this.#camera) {
-      await this.#camera.stop();
-      this.#camera = null;
-    }
+    // Hentikan semua stream kamera
+    Camera.stopAllStreams();
     
     // Bersihkan gambar
     this.#takenDocumentations.forEach(pic => {
@@ -140,8 +134,10 @@ export default class NewPage {
     this.#takenDocumentations = [];
     
     // Hapus event listeners
-    window.removeEventListener('beforeunload', this.cleanup);
-    window.removeEventListener('hashchange', this.cleanup);
+    const takeButton = document.getElementById('camera-take-button');
+    if (takeButton) {
+      takeButton.onclick = null;
+    }
   }
 
   async afterRender() {
@@ -151,9 +147,17 @@ export default class NewPage {
     });
     this.#takenDocumentations = [];
 
+    // Inisialisasi kamera
+    this.#camera = new Camera({
+      video: document.getElementById('camera-video'),
+      cameraSelect: document.getElementById('camera-select'),
+      canvas: document.getElementById('camera-canvas')
+    });
+
     this.#presenter.showNewFormMap();
     this.#setupForm();
-    this.#setupLocationButton(); 
+    this.#setupLocationButton();
+    this.#setupCamera();
   }
 
   #setupForm() {
@@ -163,7 +167,7 @@ export default class NewPage {
       
       const data = {
         description: this.#form.elements.namedItem('description').value,
-        photo: this.#takenDocumentations[0]?.blob, // Ambil gambar pertama saja
+        photo: this.#takenDocumentations[0]?.blob,
         lat: parseFloat(this.#form.elements.namedItem('latitude').value),
         lon: parseFloat(this.#form.elements.namedItem('longitude').value)
       };
@@ -185,39 +189,65 @@ export default class NewPage {
         return await this.#addTakenPicture(file);
       });
       await Promise.all(insertingPicturesPromises);
-
       await this.#populateTakenPictures();
     });
 
     document.getElementById('documentations-input-button').addEventListener('click', () => {
       this.#form.elements.namedItem('documentations-input').click();
     });
+  }
 
+  async #setupCamera() {
     const cameraContainer = document.getElementById('camera-container');
     const cameraButton = document.getElementById('open-documentations-camera-button');
 
-    cameraButton.addEventListener('click', async (event) => {
+    cameraButton.addEventListener('click', async () => {
       const isOpening = !cameraContainer.classList.contains('open');
       
       if (isOpening) {
         try {
-          event.currentTarget.textContent = 'Tutup Kamera';
+          cameraButton.textContent = 'Tutup Kamera';
           cameraContainer.classList.add('open');
-          this.#setupCamera();
           await this.#camera.launch();
+          
+          // Setup tombol ambil gambar
+          this.#camera.addCheeseButtonListener('#camera-take-button', async () => {
+            const image = await this.#camera.takePicture();
+            if (image) {
+              await this.#addTakenPicture(image);
+              await this.#populateTakenPictures();
+            }
+          });
         } catch (error) {
           console.error('Gagal membuka kamera:', error);
           cameraContainer.classList.remove('open');
-          event.currentTarget.textContent = 'Buka Kamera';
+          cameraButton.textContent = 'Buka Kamera';
         }
       } else {
-        event.currentTarget.textContent = 'Buka Kamera';
+        cameraButton.textContent = 'Buka Kamera';
         cameraContainer.classList.remove('open');
         this.#camera.stop();
       }
     });
   }
-
+  
+  async cleanup() {
+    // Hentikan semua stream kamera
+    Camera.stopAllStreams();
+    
+    // Bersihkan gambar
+    this.#takenDocumentations.forEach(pic => {
+      if (pic.url) URL.revokeObjectURL(pic.url);
+    });
+    this.#takenDocumentations = [];
+    
+    // Hapus event listeners
+    const takeButton = document.getElementById('camera-take-button');
+    if (takeButton) {
+      takeButton.onclick = null;
+    }
+  }
+  
   #updateLatLngInput(latitude, longitude) {
     const latInput = this.#form.elements.namedItem('latitude');
     const lngInput = this.#form.elements.namedItem('longitude');
@@ -255,125 +285,97 @@ export default class NewPage {
     }
   }
 
-  async #setupCamera() {
-    if (!this.#camera) {
-      this.#camera = new Camera({
-        video: document.getElementById('camera-video'),
-        canvas: document.getElementById('camera-canvas'),
-        onError: (error) => {
-          console.error('Camera Error:', error);
-          alert('Error kamera: ' + error.message);
-        }
-      });
-    }
-  
-    // Hapus event listener lama jika ada
-    const takeButton = document.getElementById('camera-take-button');
-    takeButton.removeEventListener('click', this.#takePictureHandler);
-    
-    // Buat handler baru
-    this.#takePictureHandler = async () => {
-      takeButton.disabled = true;
-      
-      try {
-        // Tunggu sampai kamera benar-benar siap
-        if (!this.#camera.isReady()) {
-          throw new Error('Kamera belum siap. Tunggu beberapa saat.');
-        }
-  
-        const image = await this.#camera.takePicture();
-        if (!image) {
-          throw new Error('Gagal mengambil gambar');
-        }
-        
-        await this.#addTakenPicture(image);
-        await this.#populateTakenPictures();
-      } catch (error) {
-        console.error('Error mengambil gambar:', error);
-        alert('Error: ' + error.message);
-      } finally {
-        takeButton.disabled = false;
-      }
-    };
-  
-    // Pasang event listener baru
-    takeButton.addEventListener('click', this.#takePictureHandler);
-  }
-  
-  async cleanup() {
-    // Hentikan kamera jika aktif
-    if (this.#camera) {
-      await this.#camera.stop();
-      this.#camera = null;
-    }
-    
-    // Bersihkan gambar
-    this.#takenDocumentations.forEach(pic => {
-      if (pic.url) URL.revokeObjectURL(pic.url);
-    });
-    this.#takenDocumentations = [];
-    
-    // Hapus event listeners
-    const takeButton = document.getElementById('camera-take-button');
-    if (takeButton) {
-      takeButton.removeEventListener('click', this.#takePictureHandler);
-    }
-  }
-  
-
   async #setupLocationButton() {
     const button = document.getElementById('use-my-location');
     const latInput = this.#form.elements.namedItem('latitude');
     const lngInput = this.#form.elements.namedItem('longitude');
   
-    button.addEventListener('click', () => {
-      this.#getUserLocation()
-        .then(({ latitude, longitude }) => {
-          // Update input form
-          latInput.value = latitude;
-          lngInput.value = longitude;
-          
-          // Update marker di peta (jika menggunakan Leaflet)
-          if (this.#map) {
-            this.#map.setView([latitude, longitude]);
-            this.#map.removeAllMarkers();
-            this.#map.addMarker([latitude, longitude], { draggable: true });
-          }
-          
-          alert('Lokasi berhasil diperbarui!');
-        })
-        .catch(error => {
-          console.error('Gagal mendapatkan lokasi:', error);
+    button.addEventListener('click', async () => {
+      try {
+        // Tampilkan loading atau indikator
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari lokasi...';
+        button.disabled = true;
+  
+        // Minta izin lokasi dengan options yang jelas
+        const position = await this.#getUserLocationWithPermission();
+        
+        const { latitude, longitude } = position;
+        
+        // Update input form
+        latInput.value = latitude;
+        lngInput.value = longitude;
+        
+        // Update marker di peta
+        if (this.#map) {
+          this.#map.setView([latitude, longitude]);
+          this.#map.removeAllMarkers();
+          this.#map.addMarker([latitude, longitude], { draggable: true });
+        }
+        
+        // Kembalikan tampilan button
+        button.innerHTML = '<i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya';
+        button.disabled = false;
+      } catch (error) {
+        console.error('Gagal mendapatkan lokasi:', error);
+        
+        // Kembalikan tampilan button
+        button.innerHTML = '<i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya';
+        button.disabled = false;
+        
+        if (error.code === error.PERMISSION_DENIED) {
+          alert('Izin lokasi ditolak. Anda dapat mengubah izin di pengaturan browser.');
+        } else {
           alert('Tidak bisa mendapatkan lokasi. Pastikan GPS aktif!');
-        });
+        }
+      }
     });
   }
   
-  #getUserLocation() {
-    return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error('Browser tidak support geolocation'));
+  // Fungsi baru untuk menangani permintaan izin
+  #getUserLocationWithPermission() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error('Geolocation tidak didukung'));
+      return;
+    }
+
+    // Cek status permission terlebih dahulu
+    navigator.permissions?.query({name: 'geolocation'}).then(permissionStatus => {
+      if (permissionStatus.state === 'denied') {
+        reject(new Error('Izin ditolak permanen'));
         return;
       }
-  
+
       navigator.geolocation.getCurrentPosition(
-        (position) => {
-          resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude
-          });
+        position => resolve({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        }),
+        error => {
+          // Handle error lebih detail
+          let errorMessage = 'Error tidak diketahui';
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = 'Izin lokasi ditolak';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = 'Informasi lokasi tidak tersedia';
+              break;
+            case error.TIMEOUT:
+              errorMessage = 'Permintaan timeout';
+              break;
+          }
+          reject(new Error(errorMessage));
         },
-        (error) => {
-          reject(error);
-        },
-        { 
+        {
           enableHighAccuracy: true,
-          timeout: 5000,
+          timeout: 10000,
           maximumAge: 0
         }
       );
     });
-  }
+  });
+}
 
   async #addTakenPicture(image) {
     try {
@@ -491,7 +493,7 @@ export default class NewPage {
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
       <button class="btn" type="submit" disabled>
-        <i class="fas fa-spinner loader-button"></i> Bagikankan Cerita Anda!
+        <i class="fas fa-spinner fa-spin"></i> Bagikan Cerita Anda!
       </button>
     `;
   }

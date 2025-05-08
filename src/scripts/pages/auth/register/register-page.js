@@ -79,7 +79,7 @@ export default class RegisterPage {
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
       <button class="btn" type="submit" disabled>
-        <i class="fas fa-spinner loader-button"></i> Daftar akun
+        <i class="fas fa-spinner fa-spin"></i> Daftar Akun
       </button>
     `;
   }

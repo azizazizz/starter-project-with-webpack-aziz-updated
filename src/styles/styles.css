@@ -285,6 +285,14 @@ header {
   display: block;
 }
 
+.camera-select {
+  width: 100%;
+  padding: 0.5rem;
+  background: #333;
+  color: #fff;
+  border: 1px solid #444;
+}
+
 .new-form__camera__video {
   width: 100%;
   background: #000;
@@ -481,4 +489,19 @@ footer hr {
 
 .leaflet-container {
   background: #333 !important;
+}
+
+/* Tambahkan di file CSS Anda */
+.btn[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.fa-spin {
+  animation: fa-spin 2s infinite linear;
+}
+
+@keyframes fa-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }

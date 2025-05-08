@@ -74,15 +74,14 @@ export const createAddStoryTemplate = () => `
       
       <div class="form-group">
         <label>Foto</label>
-        <div class="camera-options">
-          <button type="button" id="open-camera-btn" class="btn">Buka Kamera</button>
-          <span>atau</span>
-          <input type="file" id="photo-input" name="photo" accept="image/*" capture="environment" />
+        <div id="camera-container" class="new-form__camera__container">
+        <select id="camera-select" class="camera-select"></select>
+        <video id="camera-video" class="new-form__camera__video"></video>
+        <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
+        <div class="new-form__camera__tools">
+          <button id="camera-take-button" class="btn" type="button">Ambil Gambar</button>
         </div>
-        <video id="camera-view" autoplay playsinline style="display:none;"></video>
-        <canvas id="camera-canvas" style="display:none;"></canvas>
-        <button type="button" id="capture-btn" class="btn" style="display:none;">Ambil Foto</button>
-        <div id="photo-preview"></div>
+      </div>
       </div>
       
       <div class="form-group">
