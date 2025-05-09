@@ -86,23 +86,19 @@ export async function getStoryById(id) {
 export async function addNewStory({ description, photo, lat, lon }) {
   const token = getAccessToken();
   
-  // 1. Buat FormData
   const formData = new FormData();
   formData.append('description', description);
   formData.append('photo', photo);
-  if (lat) formData.append('lat', lat.toString());
-  if (lon) formData.append('lon', lon.toString());
-
-  // 2. HAPUS header 'Content-Type' agar browser otomatis set boundary
-  const headers = {
-    'Authorization': `Bearer ${token}`
-  };
+  formData.append('lat', lat.toString());
+  formData.append('lon', lon.toString());
 
   try {
     const response = await fetch(`${ENDPOINTS.STORY_LIST}`, {
       method: 'POST',
-      headers: headers, // Gunakan header tanpa Content-Type
-      body: formData // Biarkan browser set boundary otomatis
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
     });
 
     if (!response.ok) {

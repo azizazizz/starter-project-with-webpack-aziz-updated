@@ -7,7 +7,7 @@ import { MAP_SERVICE_API_KEY } from '../config';
 export default class Map {
   #zoom = 5;
   #map = null;
- 
+  
   static async getPlaceNameByCoordinate(latitude, longitude) {
     try {
       const url = new URL(`https://api.maptiler.com/geocoding/${longitude},${latitude}.json`);
@@ -39,6 +39,13 @@ export default class Map {
     });
   }
  
+    remove() {
+    if (this.#map) {
+      this.#map.remove();
+      this.#map = null;
+    }
+  }
+
   /**
    * Reference of using this static method:
    * https://stackoverflow.com/questions/43431550/how-can-i-invoke-asynchronous-code-within-a-constructor

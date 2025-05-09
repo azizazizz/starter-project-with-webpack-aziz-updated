@@ -58,13 +58,22 @@ export default class HomePage {
           return '';
         }
         
+        // Format koordinat jika tersedia
+        let locationText = 'Lokasi tidak diketahui';
+        if (story.lat && story.lon) {
+          // Format ke 6 digit desimal
+          const lat = parseFloat(story.lat).toFixed(6);
+          const lon = parseFloat(story.lon).toFixed(6);
+          locationText = `Lokasi: ${lat}, ${lon}`;
+        }
+        
         return `
           <div class="story-card">
             <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
             <div class="story-content">
               <h3>${story.name || 'Anonim'}</h3>
               <p class="story-date">${story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Tanggal tidak tersedia'}</p>
-              <p class="story-location">Lokasi: ${story.lat ? `${story.lat}, ${story.lon}` : 'Tidak diketahui'}</p>
+              <p class="story-location">${locationText}</p>
               <p>${story.description.substring(0, 100)}${story.description.length > 100 ? '...' : ''}</p>
             </div>
           </div>

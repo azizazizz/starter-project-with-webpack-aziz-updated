@@ -12,6 +12,7 @@ export default class NewPage {
   #camera;
   #takenDocumentations = [];
   #map = null;
+  #marker = null;
 
   async render() {
     return `
@@ -118,21 +119,24 @@ export default class NewPage {
     `;
   }
 
-  async cleanup() {
-    // Hentikan semua stream kamera
-    Camera.stopAllStreams();
+    async cleanup() {
+    // Stop camera stream if exists
+    if (this.#camera) {
+      this.#camera.stop();
+    }
     
-    // Bersihkan gambar
+    // Cleanup taken pictures
     this.#takenDocumentations.forEach(pic => {
       if (pic.url) URL.revokeObjectURL(pic.url);
     });
     this.#takenDocumentations = [];
     
-    // Hapus event listeners
-    const takeButton = document.getElementById('camera-take-button');
-    if (takeButton) {
-      takeButton.onclick = null;
+    // Cleanup map if exists - now using the proper remove method
+    if (this.#map) {
+      this.#map.remove(); // This will call the remove method we added to Map class
+      this.#map = null;
     }
+    this.#marker = null;
   }
 
   async afterRender() {
@@ -142,20 +146,115 @@ export default class NewPage {
     });
     this.#takenDocumentations = [];
 
-    // Inisialisasi kamera
+    // Initialize camera - only call this once
+    this.#setupCamera();
+    
+    // Initialize map
+    await this.#initMap();
+    
+    // Setup form
+    this.#setupForm();
+  }
+
+  // Only ONE #setupCamera method should exist in the class
+  async #setupCamera() {
+    const cameraContainer = document.getElementById('camera-container');
+    const cameraButton = document.getElementById('open-documentations-camera-button');
+
+    // Initialize camera instance
     this.#camera = new Camera({
       video: document.getElementById('camera-video'),
       cameraSelect: document.getElementById('camera-select'),
       canvas: document.getElementById('camera-canvas')
     });
 
-    this.#presenter.showNewFormMap();
-    this.#setupForm();
-    this.#setupCamera();
+    cameraButton.addEventListener('click', async () => {
+      const isOpening = !cameraContainer.classList.contains('open');
+      
+      if (isOpening) {
+        try {
+          cameraButton.textContent = 'Tutup Kamera';
+          cameraContainer.classList.add('open');
+          
+          await this.#camera.launch();
+          
+          // Setup capture button
+          document.getElementById('camera-take-button').onclick = async () => {
+            const image = await this.#camera.takePicture();
+            if (image) {
+              await this.#addTakenPicture(image);
+              await this.#populateTakenPictures();
+            }
+          };
+        } catch (error) {
+          console.error('Failed to open camera:', error);
+          cameraContainer.classList.remove('open');
+          cameraButton.textContent = 'Buka Kamera';
+        }
+      } else {
+        cameraButton.textContent = 'Buka Kamera';
+        cameraContainer.classList.remove('open');
+        this.#camera.stop();
+      }
+    });
   }
 
-  #setupForm() {
+  async #initMap() {
+    try {
+      this.showMapLoading();
+      
+      // Initialize map with scroll wheel zoom enabled but disable zoom on click
+      this.#map = await Map.build('#map', {
+        zoom: 15,
+        scrollWheelZoom: true,
+        zoomOnClick: false // Disable zoom when clicking on map
+      });
+
+      const centerCoordinate = this.#map.getCenter();
+      this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
+
+      // Add draggable marker
+      this.#marker = this.#map.addMarker(
+        [centerCoordinate.latitude, centerCoordinate.longitude],
+        { 
+          draggable: true,
+          autoPan: true,
+          zoomOnClick: false // Disable zoom when clicking marker
+        }
+      );
+
+      // Update coordinates when marker is moved
+      this.#marker.addEventListener('move', (event) => {
+        const coordinate = event.target.getLatLng();
+        this.#updateLatLngInput(coordinate.lat, coordinate.lng);
+      });
+
+      // Update marker position on map click (without zooming)
+      this.#map.addMapEventListener('click', (event) => {
+        this.#marker.setLatLng(event.latlng);
+        this.#updateLatLngInput(event.latlng.lat, event.latlng.lng);
+      });
+
+    } catch (error) {
+      console.error('Map initialization error:', error);
+    } finally {
+      this.hideMapLoading();
+    }
+  }
+
+
+  #updateLatLngInput(latitude, longitude) {
+    const latInput = this.#form?.elements?.namedItem('latitude');
+    const lngInput = this.#form?.elements?.namedItem('longitude');
+    if (latInput && lngInput) {
+      latInput.value = latitude;
+      lngInput.value = longitude;
+    }
+  }
+
+async #setupForm() {
     this.#form = document.getElementById('new-form');
+    
     this.#form.addEventListener('submit', async (event) => {
       event.preventDefault();
       
@@ -178,104 +277,33 @@ export default class NewPage {
       await this.#presenter.postNewStory(data);
     });
 
-    document.getElementById('documentations-input').addEventListener('change', async (event) => {
-      const insertingPicturesPromises = Object.values(event.target.files).map(async (file) => {
-        return await this.#addTakenPicture(file);
-      });
-      await Promise.all(insertingPicturesPromises);
-      await this.#populateTakenPictures();
-    });
-
+    // File upload button handler
     document.getElementById('documentations-input-button').addEventListener('click', () => {
-      this.#form.elements.namedItem('documentations-input').click();
+      document.getElementById('documentations-input').click();
     });
-  }
 
-  async #setupCamera() {
-    const cameraContainer = document.getElementById('camera-container');
-    const cameraButton = document.getElementById('open-documentations-camera-button');
+    // File input change handler - FIXED VERSION
+    document.getElementById('documentations-input').addEventListener('change', async (event) => {
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
 
-    cameraButton.addEventListener('click', async () => {
-      const isOpening = !cameraContainer.classList.contains('open');
-      
-      if (isOpening) {
-        try {
-          cameraButton.textContent = 'Tutup Kamera';
-          cameraContainer.classList.add('open');
-          await this.#camera.launch();
-          
-          // Setup tombol ambil gambar
-          this.#camera.addCheeseButtonListener('#camera-take-button', async () => {
-            const image = await this.#camera.takePicture();
-            if (image) {
-              await this.#addTakenPicture(image);
-              await this.#populateTakenPictures();
-            }
-          });
-        } catch (error) {
-          console.error('Gagal membuka kamera:', error);
-          cameraContainer.classList.remove('open');
-          cameraButton.textContent = 'Buka Kamera';
+      // Clear previous selections
+      this.#takenDocumentations = [];
+
+      // Process each selected file
+      for (const file of files) {
+        if (file.type.startsWith('image/')) {
+          try {
+            await this.#addTakenPicture(file);
+          } catch (error) {
+            console.error('Error processing file:', file.name, error);
+          }
         }
-      } else {
-        cameraButton.textContent = 'Buka Kamera';
-        cameraContainer.classList.remove('open');
-        this.#camera.stop();
       }
-    });
-  }
-  
-  async cleanup() {
-    // Hentikan semua stream kamera
-    Camera.stopAllStreams();
-    
-    // Bersihkan gambar
-    this.#takenDocumentations.forEach(pic => {
-      if (pic.url) URL.revokeObjectURL(pic.url);
-    });
-    this.#takenDocumentations = [];
-    
-    // Hapus event listeners
-    const takeButton = document.getElementById('camera-take-button');
-    if (takeButton) {
-      takeButton.onclick = null;
-    }
-  }
-  
-  #updateLatLngInput(latitude, longitude) {
-    const latInput = this.#form.elements.namedItem('latitude');
-    const lngInput = this.#form.elements.namedItem('longitude');
-    latInput.value = latitude;
-    lngInput.value = longitude;
-  }
 
-  async initialMap() {
-    try {
-      this.#map = await Map.build('#map', {
-        zoom: 15,
-      });
-  
-      const centerCoordinate = this.#map.getCenter();
-      this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
-  
-      const draggableMarker = this.#map.addMarker(
-        [centerCoordinate.latitude, centerCoordinate.longitude],
-        { draggable: true }
-      );
-  
-      draggableMarker.addEventListener('move', (event) => {
-        const coordinate = event.target.getLatLng();
-        this.#updateLatLngInput(coordinate.lat, coordinate.lng);
-      });
-  
-      this.#map.addMapEventListener('click', (event) => {
-        draggableMarker.setLatLng(event.latlng);
-        this.#map.changeCamera(event.latlng);
-      });
-  
-    } catch (error) {
-      console.error('Gagal inisialisasi peta:', error);
-    }
+      await this.#populateTakenPictures();
+      event.target.value = ''; // Reset input to allow re-uploading same files
+    });
   }
 
   async #addTakenPicture(image) {
@@ -401,7 +429,7 @@ export default class NewPage {
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn" type="submit">Bagikankan Cerita Anda!</button>
+      <button class="btn" type="submit">Bagikan Cerita Anda!</button>
     `;
   }
 }

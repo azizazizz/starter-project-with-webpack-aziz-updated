@@ -62,14 +62,14 @@ export default class LoginPage {
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
       <button class="btn-submit" type="submit" disabled>
-        <i class="fas fa-spinner fa-spin"></i> Masuk
+        <i class="fas fa-spinner fa-spin"></i> Login
       </button>
     `;
   }
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn-submit" type="submit">Masuk</button>
+      <button class="btn-submit" type="submit">Login</button>
     `;
   }
 }
