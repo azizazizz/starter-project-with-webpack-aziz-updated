@@ -93,7 +93,7 @@ export default class NewPage {
               </div>
             </div>
             <div class="form-control">
-              <div class="new-form__location__title">Silahkan Masukkan Lokasi. Geser marker, atau klik gunakan lokasi saya.</div>
+              <div class="new-form__location__title">Silahkan Masukkan Lokasi. Geser marker dan pilih manual pada peta</div>
   
               <div class="new-form__location__container">
                 <div class="new-form__location__map__container">
@@ -104,11 +104,6 @@ export default class NewPage {
                   <input type="number" name="latitude" value="-6.175389" disabled>
                   <input type="number" name="longitude" value="106.827139" disabled>
                 </div>
-              </div>
-              <div class="new-form__location__tools">
-                <button id="use-my-location" type="button" class="btn btn-outline">
-                  <i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya
-                </button>
               </div>
             </div>
             <div class="form-buttons">
@@ -156,7 +151,6 @@ export default class NewPage {
 
     this.#presenter.showNewFormMap();
     this.#setupForm();
-    this.#setupLocationButton();
     this.#setupCamera();
   }
 
@@ -259,7 +253,6 @@ export default class NewPage {
     try {
       this.#map = await Map.build('#map', {
         zoom: 15,
-        locate: true
       });
   
       const centerCoordinate = this.#map.getCenter();
@@ -284,98 +277,6 @@ export default class NewPage {
       console.error('Gagal inisialisasi peta:', error);
     }
   }
-
-  async #setupLocationButton() {
-    const button = document.getElementById('use-my-location');
-    const latInput = this.#form.elements.namedItem('latitude');
-    const lngInput = this.#form.elements.namedItem('longitude');
-  
-    button.addEventListener('click', async () => {
-      try {
-        // Tampilkan loading atau indikator
-        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mencari lokasi...';
-        button.disabled = true;
-  
-        // Minta izin lokasi dengan options yang jelas
-        const position = await this.#getUserLocationWithPermission();
-        
-        const { latitude, longitude } = position;
-        
-        // Update input form
-        latInput.value = latitude;
-        lngInput.value = longitude;
-        
-        // Update marker di peta
-        if (this.#map) {
-          this.#map.setView([latitude, longitude]);
-          this.#map.removeAllMarkers();
-          this.#map.addMarker([latitude, longitude], { draggable: true });
-        }
-        
-        // Kembalikan tampilan button
-        button.innerHTML = '<i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya';
-        button.disabled = false;
-      } catch (error) {
-        console.error('Gagal mendapatkan lokasi:', error);
-        
-        // Kembalikan tampilan button
-        button.innerHTML = '<i class="fas fa-location-arrow"></i> Gunakan Lokasi Saya';
-        button.disabled = false;
-        
-        if (error.code === error.PERMISSION_DENIED) {
-          alert('Izin lokasi ditolak. Anda dapat mengubah izin di pengaturan browser.');
-        } else {
-          alert('Tidak bisa mendapatkan lokasi. Pastikan GPS aktif!');
-        }
-      }
-    });
-  }
-  
-  // Fungsi baru untuk menangani permintaan izin
-  #getUserLocationWithPermission() {
-  return new Promise((resolve, reject) => {
-    if (!navigator.geolocation) {
-      reject(new Error('Geolocation tidak didukung'));
-      return;
-    }
-
-    // Cek status permission terlebih dahulu
-    navigator.permissions?.query({name: 'geolocation'}).then(permissionStatus => {
-      if (permissionStatus.state === 'denied') {
-        reject(new Error('Izin ditolak permanen'));
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        position => resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude
-        }),
-        error => {
-          // Handle error lebih detail
-          let errorMessage = 'Error tidak diketahui';
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage = 'Izin lokasi ditolak';
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage = 'Informasi lokasi tidak tersedia';
-              break;
-            case error.TIMEOUT:
-              errorMessage = 'Permintaan timeout';
-              break;
-          }
-          reject(new Error(errorMessage));
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
-    });
-  });
-}
 
   async #addTakenPicture(image) {
     try {

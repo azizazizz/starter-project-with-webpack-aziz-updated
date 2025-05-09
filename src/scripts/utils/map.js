@@ -50,6 +50,7 @@ export default class Map {
  
     const jakartaCoordinate = [-6.2, 106.816666];
  
+    // Using Geolocation API
     if ('locate' in options && options.locate) {
       try {
         const position = await Map.getCurrentPosition();
@@ -78,8 +79,9 @@ export default class Map {
   constructor(selector, options = {}) {
     this.#zoom = options.zoom ?? this.#zoom;
  
-    const tileOsm = tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    const tileOsm = tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
     });
  
     this.#map = map(document.querySelector(selector), {

@@ -3,6 +3,7 @@ body {
   font-family: 'Lexend', sans-serif;
   background-color: #1c1c1c;
   color: #f4f4f4;
+  line-height: 1.6;
 }
 
 a {
@@ -17,7 +18,7 @@ img {
 
 .container {
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
   padding: 0 1rem;
 }
 
@@ -36,6 +37,7 @@ img {
   top: 0;
 }
 
+/* Header */
 header {
   background-color: #ff6600;
   padding: 1rem 0;
@@ -96,73 +98,98 @@ header {
   min-height: 80vh;
 }
 
-/* Auth Styles */
-.auth {
-  max-width: 500px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background-color: #2a2a2a;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
-}
-
-.auth h1 {
-  color: #ffa500;
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.auth form {
+/* Login/Register Form Styles */
+.auth-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  padding: 2rem 0;
 }
 
-.auth input {
-  padding: 0.8rem;
-  border: 1px solid #444;
-  border-radius: 5px;
-  background-color: #333;
-  color: #fff;
+.auth-card {
+  background-color: #2a2a2a;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
 }
 
-.auth button {
-  background-color: #ff6600;
-  color: white;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s;
+.auth-title {
+  color: #ffa500;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
 }
 
-.auth button:hover {
-  background-color: #ff8533;
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
-.auth .form-group {
+.form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.auth .form-group label {
+.form-group label {
   font-weight: 500;
-}
-
-.auth-links {
-  text-align: center;
-  margin-top: 1rem;
   color: #ccc;
 }
 
-.auth-links a {
-  color: #ffa500;
-  text-decoration: none;
+.form-group input {
+  padding: 0.8rem 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #333;
+  color: #fff;
+  font-size: 1rem;
+  transition: border-color 0.3s;
 }
 
-/* Add Story Page Styles */
+.form-group input:focus {
+  outline: none;
+  border-color: #ff6600;
+}
+
+.auth-button {
+  background-color: #ff6600;
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 0.5rem;
+}
+
+.auth-button:hover {
+  background-color: #ff8533;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #aaa;
+}
+
+.auth-link {
+  color: #ffa500;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.auth-link:hover {
+  color: #ffc266;
+}
+
+/* Add Story Form */
 .add-story {
   max-width: 800px;
   margin: 2rem auto;
@@ -172,7 +199,7 @@ header {
   box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
 }
 
-.add-story h1 {
+.add-story h2 {
   color: #ffa500;
   text-align: center;
   margin-bottom: 1.5rem;
@@ -186,7 +213,6 @@ header {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #f4f4f4;
 }
 
 .add-story textarea {
@@ -197,7 +223,37 @@ header {
   background-color: #333;
   color: #fff;
   min-height: 100px;
-  resize: vertical;
+}
+
+.btn-submit {
+  background-color: #ff6600;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.btn-submit:hover {
+  background-color: #ff8533;
+}
+
+.btn {
+  background-color: #444;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #555;
 }
 
 /* Map Container in Add Story */

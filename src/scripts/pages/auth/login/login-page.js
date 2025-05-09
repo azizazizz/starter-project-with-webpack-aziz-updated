@@ -6,33 +6,24 @@ export default class LoginPage {
 
   async render() {
     return `
-      <section class="login-container">
-        <article class="login-form-container">
-          <h1 class="login__title">Selamat Datang Kembali Di Dstory, Silahkan Login.</h1>
-
-          <form id="login-form" class="login-form">
-            <div class="form-control">
-              <label for="email-input" class="login-form__email-title">Email</label>
-
-              <div class="login-form__title-container">
-                <input id="email-input" type="email" name="email" placeholder="Contoh: nama@email.com">
-              </div>
-            </div>
-            <div class="form-control">
-              <label for="password-input" class="login-form__password-title">Password</label>
-
-              <div class="login-form__title-container">
-                <input id="password-input" type="password" name="password" placeholder="Masukkan password Anda">
-              </div>
-            </div>
-            <div class="form-buttons login-form__form-buttons">
-              <div id="submit-button-container">
-                <button class="btn" type="submit">Masuk</button>
-              </div>
-              <p class="login-form__do-not-have-account">Belum punya akun? <a href="#/register">Daftar</a></p>
-            </div>
-          </form>
-        </article>
+        <section class="auth">
+        <h2>Selamat Datang Kembali Di DStory, Silahkan Login.</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password" required />
+          </div>
+          <div id="submit-button-container">
+            <button type="submit" class="btn-submit">Login</button>
+          </div>
+        </form>
+        <div class="auth-links">
+          Belum punya akun? <a href="#/register">Daftar disini</a>
+        </div>
       </section>
     `;
   }
@@ -51,8 +42,8 @@ export default class LoginPage {
       event.preventDefault();
 
       const data = {
-        email: document.getElementById('email-input').value,
-        password: document.getElementById('password-input').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value,
       };
       await this.#presenter.getLogin(data);
     });
@@ -60,7 +51,6 @@ export default class LoginPage {
 
   loginSuccessfully(message) {
     console.log(message);
-
     // Redirect
     location.hash = '/';
   }
@@ -71,7 +61,7 @@ export default class LoginPage {
 
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn" type="submit" disabled>
+      <button class="btn-submit" type="submit" disabled>
         <i class="fas fa-spinner fa-spin"></i> Masuk
       </button>
     `;
@@ -79,7 +69,7 @@ export default class LoginPage {
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn" type="submit">Masuk</button>
+      <button class="btn-submit" type="submit">Masuk</button>
     `;
   }
 }

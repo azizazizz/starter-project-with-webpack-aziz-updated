@@ -30,7 +30,6 @@ export const createStoryItemTemplate = (story) => `
       <p class="story-description">${story.description}</p>
       <p class="story-user">Oleh: ${story.name}</p>
       <p class="story-date">${new Date(story.createdAt).toLocaleString()}</p>
-      <button class="btn-detail" data-id="${story.id}">Lihat Detail</button>
     </div>
   </div>
 `;
@@ -112,7 +111,6 @@ export const generateStoryCardTemplate = (story) => `
       <h3>${story.name}</h3>
       <p>${story.description.substring(0, 100)}...</p>
       <small>${new Date(story.createdAt).toLocaleDateString()}</small>
-      <button class="btn-detail" data-id="${story.id}">Lihat Detail</button>
     </div>
   </div>
 `;
