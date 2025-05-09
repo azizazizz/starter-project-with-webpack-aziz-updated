@@ -7,33 +7,35 @@ export default class RegisterPage {
   async render() {
     return `
       <section class="auth">
-      <h2>Register</h2>
-      <form id="register-form">
-        <div class="form-group">
-          <label for="name">Nama</label>
-          <input type="text" id="name" name="name" placeholder="Nama" required />
+        <h2>Register</h2>
+        <form id="register-form">
+          <div class="form-group">
+            <label for="name">Nama</label>
+            <input type="text" id="name" name="name" placeholder="Nama" required />
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Email" required />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Password" required />
+          </div>
+          <div id="submit-button-container">
+            <button type="submit" class="btn-submit">Register</button>
+          </div>
+        </form>
+        <div class="auth-links">
+          Sudah punya akun? <a href="#/login">Login disini</a>
         </div>
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="Email" required />
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" placeholder="Password" required />
-        </div>
-        <button type="submit" class="btn-submit">Register</button>
-      </form>
-      <div class="auth-links">
-        Sudah punya akun? <a href="#/login">Login disini</a>
-      </div>
-    </section>
-  `;
+      </section>
+    `;
   }
 
   async afterRender() {
     this.#presenter = new RegisterPresenter({
       view: this,
-      model: { register, putAccessToken }, // Pastikan nama 'model' match dengan constructor presenter
+      model: { register, putAccessToken },
     });
     this.#setupForm();
   }
@@ -43,9 +45,9 @@ export default class RegisterPage {
       event.preventDefault();
 
       const data = {
-        name: document.getElementById('name-input').value,
-        email: document.getElementById('email-input').value,
-        password: document.getElementById('password-input').value,
+        name: document.getElementById('name').value, // Diubah dari 'name-input' ke 'name'
+        email: document.getElementById('email').value, // Diubah dari 'email-input' ke 'email'
+        password: document.getElementById('password').value // Diubah dari 'password-input' ke 'password'
       };
       await this.#presenter.getRegistered(data);
     });
@@ -53,8 +55,6 @@ export default class RegisterPage {
 
   registeredSuccessfully(message) {
     console.log(message);
-
-    // Redirect
     location.hash = '/login';
   }
 
@@ -64,7 +64,7 @@ export default class RegisterPage {
 
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn" type="submit" disabled>
+      <button class="btn-submit" type="submit" disabled>
         <i class="fas fa-spinner fa-spin"></i> Daftar Akun
       </button>
     `;
@@ -72,7 +72,7 @@ export default class RegisterPage {
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn" type="submit">Daftar akun</button>
+      <button class="btn-submit" type="submit">Daftar Akun</button>
     `;
   }
 }

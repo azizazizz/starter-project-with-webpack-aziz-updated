@@ -4,25 +4,25 @@ const { merge } = require('webpack-merge');
 
 module.exports = merge(common, {
   mode: 'development',
-  module: {
-    rules: [
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          'css-loader',
-        ],
-      },
-    ],
-  },
+  devtool: 'inline-source-map',
   devServer: {
-    static: path.resolve(__dirname, 'dist'),
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
+    },
     port: 9000,
+    open: true,
+    hot: true,
+    compress: true,
+    historyApiFallback: true,
     client: {
       overlay: {
         errors: true,
-        warnings: true,
+        warnings: false,
       },
+      progress: true,
     },
+  },
+  optimization: {
+    runtimeChunk: 'single',
   },
 });

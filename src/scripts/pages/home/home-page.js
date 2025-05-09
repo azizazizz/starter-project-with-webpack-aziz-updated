@@ -1,13 +1,12 @@
 import HomePresenter from './home-presenter';
-import Map from '../../utils/map';
 import * as StoryAPI from '../../data/api';
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
 
 export default class HomePage {
   #presenter;
   #stories = [];
   #map = null;
+  #markers = [];
 
   async render() {
     return `
@@ -19,6 +18,9 @@ export default class HomePage {
         <div class="map-container">
           <h2>Lokasi Cerita</h2>
           <div id="stories-map" class="stories-map"></div>
+          <div id="map-loading" class="map-loading" style="display: none;">
+            <div class="loader"></div>
+          </div>
         </div>
       </section>
     `;
@@ -77,45 +79,77 @@ export default class HomePage {
   }
 
   async #initMap() {
-    if (!this.#stories || this.#stories.length === 0) return;
-    
     try {
-      this.#map = await Map.build('#stories-map', {
-        zoom: 5,
-        locate: true
-      });
+      // Show loading indicator
+      const loadingElement = document.getElementById('map-loading');
+      if (loadingElement) loadingElement.style.display = 'block';
+
+      // Cleanup previous map if exists
+      await this.cleanup();
+
+      // Dynamically import Leaflet
+      const L = await import('leaflet');
       
-      // Add markers for each story with popup
-      this.#stories.forEach(story => {
-        if (story.lat && story.lon) {
-          this.#map.addMarker([story.lat, story.lon], {}, {
-            content: `
-              <div class="popup-content">
-                <h4>${story.name || 'Anonim'}</h4>
-                <img src="${story.photoUrl}" width="150" style="margin: 5px 0;">
-                <p>${story.description}</p>
-                <small>${story.createdAt ? new Date(story.createdAt).toLocaleDateString() : ''}</small>
-              </div>
-            `
-          });
-        }
-      });
+      // Initialize map
+      this.#map = L.map('stories-map', {
+        preferCanvas: true,
+      }).setView([-6.1754, 106.8272], 5);
       
-      // Fit bounds to show all markers
-      if (this.#stories.some(story => story.lat && story.lon)) {
-        const bounds = this.#stories
-          .filter(story => story.lat && story.lon)
-          .reduce((acc, story) => {
-            return acc.extend([story.lat, story.lon]);
-          }, L.latLngBounds(
-            [this.#stories[0].lat, this.#stories[0].lon], 
-            [this.#stories[0].lat, this.#stories[0].lon]
-          ));
-        
-        this.#map.fitBounds(bounds);
+      // Add tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18,
+      }).addTo(this.#map);
+
+      // Add markers for each story
+      this.#markers = this.#stories
+        .filter(story => story.lat && story.lon)
+        .map(story => {
+          const marker = L.marker([story.lat, story.lon]).addTo(this.#map);
+          marker.bindPopup(`
+            <div class="popup-content">
+              <img src="${story.photoUrl}" width="150" style="margin: 5px 0;">
+              <h4>${story.name || 'Anonim'}</h4>
+              <p>${story.description}</p>
+              <small>${new Date(story.createdAt).toLocaleDateString()}</small>
+            </div>
+          `);
+          return marker;
+        });
+
+      // Fit bounds to show all markers if available
+      if (this.#markers.length > 0) {
+        const group = new L.featureGroup(this.#markers);
+        this.#map.fitBounds(group.getBounds());
       }
+
     } catch (error) {
-      console.error('Failed to initialize map:', error);
+      console.error('Map initialization error:', error);
+    } finally {
+      const loadingElement = document.getElementById('map-loading');
+      if (loadingElement) loadingElement.style.display = 'none';
+    }
+  }
+
+  async cleanup() {
+    // Clear all markers
+    this.#markers.forEach(marker => {
+      if (marker && marker.remove) {
+        marker.remove();
+      }
+    });
+    this.#markers = [];
+
+    // Remove map if exists
+    if (this.#map) {
+      this.#map.remove();
+      this.#map = null;
+    }
+
+    // Cleanup container
+    const mapContainer = document.getElementById('stories-map');
+    if (mapContainer) {
+      mapContainer.innerHTML = '';
     }
   }
 
@@ -127,6 +161,7 @@ export default class HomePage {
         <div class="error-message">
           <p>Gagal memuat cerita. Silakan coba lagi nanti.</p>
           <p>${error.message}</p>
+          <button onclick="window.location.reload()">Muat Ulang</button>
         </div>
       `;
     }

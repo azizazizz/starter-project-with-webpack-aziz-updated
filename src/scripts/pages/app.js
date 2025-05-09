@@ -103,32 +103,37 @@ async renderPage() {
   const route = routes[url];
 
   if (!route) {
-    console.error('Route not found:', url);
+    this.#content.innerHTML = '<h1>Halaman tidak ditemukan</h1>';
     return;
   }
 
-  // Cleanup previous page
-  await this.#cleanupCurrentPage();
+  try {
+    // Cleanup previous page
+    if (this.#currentPage && typeof this.#currentPage.cleanup === 'function') {
+      await this.#currentPage.cleanup();
+    }
 
-  // Get new page instance
-  this.#currentPage = route();
+    // Get new page instance
+    this.#currentPage = route();
 
-  const transition = transitionHelper({
-    updateDOM: async () => {
-      try {
-        this.#content.innerHTML = await this.#currentPage.render();
-        await this.#currentPage.afterRender();
-      } catch (error) {
-        console.error('Error rendering page:', error);
-        this.#content.innerHTML = '<p>Terjadi kesalahan saat memuat halaman</p>';
-      }
-    },
-  });
+    if (!document.startViewTransition) {
+      this.#content.innerHTML = await this.#currentPage.render();
+      await this.#currentPage.afterRender();
+      return;
+    }
 
-  transition.ready.catch(console.error);
-  transition.updateCallbackDone.then(() => {
-    scrollTo({ top: 0, behavior: 'instant' });
-    this.#setupNavigationList();
-  });
+    const transition = document.startViewTransition(async () => {
+      this.#content.innerHTML = await this.#currentPage.render();
+      await this.#currentPage.afterRender();
+    });
+
+    await transition.ready;
+    scrollTo({ top: 0, behavior: 'smooth' });
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      console.error('Error rendering page:', error);
+      this.#content.innerHTML = '<p>Terjadi kesalahan saat memuat halaman</p>';
+    }
+  }
 }
 }
