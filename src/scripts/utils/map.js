@@ -3,6 +3,8 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { MAP_SERVICE_API_KEY } from '../config';
+import L from 'leaflet';
+
  
 export default class Map {
   #zoom = 5;
@@ -84,20 +86,38 @@ export default class Map {
   }
  
   constructor(selector, options = {}) {
-    this.#zoom = options.zoom ?? this.#zoom;
- 
-    const tileOsm = tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
-    });
- 
-    this.#map = map(document.querySelector(selector), {
-      zoom: this.#zoom,
-      scrollWheelZoom: false,
-      layers: [tileOsm],
-      ...options,
-    });
-  }
+  this.#zoom = options.zoom ?? this.#zoom;
+
+  const attribution =
+    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>';
+
+  const tileStreets = tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=kE4NvcySWZU5cDQjqzgT`, {
+    attribution,
+    tileSize: 512,
+    zoomOffset: -1,
+  });
+
+  const tileSatellite = tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=OCxf3aKSk6gkj1aQKlOR`, {
+    attribution,
+    tileSize: 512,
+    zoomOffset: -1,
+  });
+
+  const baseLayers = {
+    'Streets': tileStreets,
+    'Satellite': tileSatellite,
+  };
+
+  this.#map = map(document.querySelector(selector), {
+    zoom: this.#zoom,
+    scrollWheelZoom: false,
+    layers: [tileStreets],
+    ...options,
+  });
+
+  L.control.layers(baseLayers).addTo(this.#map);
+}
+
 
     changeCamera(coordinate, zoomLevel = null) {
     if (!zoomLevel) {

@@ -25,9 +25,9 @@
     
   </head>
   <body>
-    <header>
-      <button id="skip-link" class="skip-link">Menuju konten utama</button>
+    <a href="#main-content" class="skip-link">Menuju konten utama</a>
 
+    <header>
       <div class="header-content container">
         <a class="brand-name__link" href="#/">
           <img class="brand-name__link__image" src="images/logo.png" alt="DStory Logo" />
@@ -43,7 +43,9 @@
       </div>
     </header>
 
-    <main tabIndex="-1" id="main-content" class="main-content"></main>
+    <main id="main-content" class="main-content" tabindex="-1">
+      
+    </main>
 
     <footer>
       <div class="container">
@@ -59,10 +61,10 @@
         </div>
       </div>
     </footer>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-    
+
     <div id="toast-container" class="toast-container"></div>
   </body>
 </html>

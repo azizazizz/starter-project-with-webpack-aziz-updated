@@ -407,6 +407,25 @@ header {
   color: white;
 }
 
+.btn-load-more {
+  display: block;
+  margin: 2rem auto;
+  padding: 0.8rem 2rem;
+  background-color: #ff6600;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 2px 10px rgba(255, 102, 0, 0.3);
+}
+
+.btn-load-more:hover {
+  background-color: #ff8533;
+}
+
+
 /* Kamera & map */
 .new-form__camera__container,
 .new-form__location__container {
@@ -434,11 +453,6 @@ header {
   display: block;
 }
 
-#map {
-  height: 200px;
-  border-radius: 0.5rem;
-  margin-top: 0.5rem;
-}
 
 /* Output gambar */
 .new-form__documentations__outputs {
@@ -572,12 +586,9 @@ header {
   font-size: 1.3rem;
 }
 
-#stories-map {
-  height: 500px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-  background: #f0f0f0;
+.stories-map {
+  height: 400px;
+  width: 100%;
 }
 
 /* Footer Styles */

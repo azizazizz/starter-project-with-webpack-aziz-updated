@@ -74,6 +74,7 @@ export async function getAllStories({ page = 1, size = 10, location = 0 } = {}) 
   }
 }
 
+
 export async function getStoryById(id) {
   const token = getAccessToken();
   const response = await fetch(ENDPOINTS.STORY_DETAIL(id), {

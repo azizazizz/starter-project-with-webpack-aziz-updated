@@ -4,9 +4,9 @@ export default class HomePresenter {
     this._model = model;
   }
 
-  async showStories() {
+  async showStories(page, size) {
     try {
-      const response = await this._model.getAllStories();
+      const response = await this._model.getAllStories({ page, size });
       
       if (!response || !response.ok || !response.listStory) {
         throw new Error('Data stories tidak valid dari API');

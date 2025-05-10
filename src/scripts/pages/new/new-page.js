@@ -150,11 +150,11 @@ export default class NewPage {
     // Initialize camera - only call this once
     this.#setupCamera();
     
-    // Initialize map
-    await this.#initMap();
-    
     // Setup form
     this.#setupForm();
+
+    // Initialize map
+    await this.#initMap();
   }
 
   // Only ONE #setupCamera method should exist in the class
@@ -201,17 +201,22 @@ export default class NewPage {
     });
   }
 
-  async #initMap() {
+    async #initMap() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+      console.warn('Map container not found, skip initialization');
+      return;
+    }
+
     try {
       this.showMapLoading();
-      
-      // Initialize map with scroll wheel zoom enabled but disable zoom on click
+
       this.#map = await Map.build('#map', {
         zoom: 15,
         scrollWheelZoom: true,
-        zoomOnClick: false // Disable zoom when clicking on map
+        zoomOnClick: false,
       });
-
+      
       const centerCoordinate = this.#map.getCenter();
       this.#updateLatLngInput(centerCoordinate.latitude, centerCoordinate.longitude);
 

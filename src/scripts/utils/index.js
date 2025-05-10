@@ -77,7 +77,17 @@ export function convertBase64ToUint8Array(base64String) {
 }
 
 export function setupSkipToContent(element, mainContent) {
-  element.addEventListener('click', () => mainContent.focus());
+  if (!element || !mainContent) return;
+
+  element.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    if (!mainContent.hasAttribute('tabindex')) {
+      mainContent.setAttribute('tabindex', '-1');
+    }
+
+    mainContent.focus();
+  });
 }
 
 export function transitionHelper({ skipTransition = false, updateDOM }) {

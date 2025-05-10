@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     content: document.getElementById('main-content'),
     drawerButton: document.getElementById('drawer-button'),
     drawerNavigation: document.getElementById('navigation-drawer'),
-    skipLinkButton: document.getElementById('skip-link'),
+    skipLinkButton: document.querySelector('.skip-link'), 
   });
   
   await app.renderPage();
