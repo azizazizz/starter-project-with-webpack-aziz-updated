@@ -1,4 +1,5 @@
 import LoginPresenter from './login-presenter';
+import { showToast } from '../../../utils/toast';
 import { login, putAccessToken } from '../../../utils/auth';
 
 export default class LoginPage {
@@ -7,7 +8,7 @@ export default class LoginPage {
   async render() {
     return `
         <section class="auth">
-        <h2>Selamat Datang Kembali Di DStory, Silahkan Login.</h2>
+        <h2>Selamat Datang Kembali Di DStory, Silahkan Masuk.</h2>
         <form id="login-form">
           <div class="form-group">
             <label for="email">Email</label>
@@ -18,11 +19,11 @@ export default class LoginPage {
             <input type="password" id="password" name="password" placeholder="Password" required />
           </div>
           <div id="submit-button-container">
-            <button type="submit" class="btn-submit">Login</button>
+            <button type="submit" class="btn-submit">Masuk</button>
           </div>
         </form>
         <div class="auth-links">
-          Belum punya akun? <a href="#/register">Daftar disini</a>
+          Belum punya akun? <a href="#/register" style="color: #1B56FD;">Daftar disini</a>
         </div>
       </section>
     `;
@@ -50,26 +51,26 @@ export default class LoginPage {
   }
 
   loginSuccessfully(message) {
-    console.log(message);
-    // Redirect
-    location.hash = '/';
-  }
+  showToast(message, 'success');
+  location.hash = '/';
+}
 
   loginFailed(message) {
-    alert(message);
-  }
+  showToast(message, 'error');
+}
+
 
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
       <button class="btn-submit" type="submit" disabled>
-        <i class="fas fa-spinner fa-spin"></i> Login
+        <i class="fas fa-spinner fa-spin"></i> Masuk Akun
       </button>
     `;
   }
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn-submit" type="submit">Login</button>
+      <button class="btn-submit" type="submit">Masuk</button>
     `;
   }
 }

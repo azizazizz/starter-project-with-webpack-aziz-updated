@@ -7,13 +7,6 @@ export const generateMainNavigationListTemplate = () => `
   </ul>
 `;
 
-export const generateAuthenticatedNavigationListTemplate = () => `
-  <ul>
-    <li><a href="#/profile">Profil</a></li>
-    <li><a href="#" id="logout-button">Logout</a></li>
-  </ul>
-`;
-
 export const generateUnauthenticatedNavigationListTemplate = () => `
   <ul>
     <li><a href="#/login">Login</a></li>

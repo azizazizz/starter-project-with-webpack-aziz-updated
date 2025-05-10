@@ -1,4 +1,5 @@
 import RegisterPresenter from './register-presenter';
+import { showToast } from '../../../utils/toast';
 import { register, putAccessToken } from '../../../utils/auth';
 
 export default class RegisterPage {
@@ -7,7 +8,7 @@ export default class RegisterPage {
   async render() {
     return `
       <section class="auth">
-        <h2>Register</h2>
+        <h2>Daftar Akun</h2>
         <form id="register-form">
           <div class="form-group">
             <label for="name">Nama</label>
@@ -22,11 +23,11 @@ export default class RegisterPage {
             <input type="password" id="password" name="password" placeholder="Password" required />
           </div>
           <div id="submit-button-container">
-            <button type="submit" class="btn-submit">Register</button>
+            <button type="submit" class="btn-submit">Daftar</button>
           </div>
         </form>
         <div class="auth-links">
-          Sudah punya akun? <a href="#/login">Login disini</a>
+          Sudah punya akun? <a href="#/login" style="color: #1B56FD;">Login disini</a>
         </div>
       </section>
     `;
@@ -53,26 +54,28 @@ export default class RegisterPage {
     });
   }
 
-  registeredSuccessfully(message) {
-    console.log(message);
+
+    registeredSuccessfully(message) {
+    showToast(message, 'success'); // ✅ toast hijau
     location.hash = '/login';
   }
 
-  registeredFailed(message) {
-    alert(message);
+    registeredFailed(message) {
+    showToast(message, 'error'); // ❌ toast merah
   }
+
 
   showSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
       <button class="btn-submit" type="submit" disabled>
-        <i class="fas fa-spinner fa-spin"></i> Daftar Akun
+        <i class="fas fa-spinner fa-spin"></i> Mendaftarkan Akun
       </button>
     `;
   }
 
   hideSubmitLoadingButton() {
     document.getElementById('submit-button-container').innerHTML = `
-      <button class="btn-submit" type="submit">Daftar Akun</button>
+      <button class="btn-submit" type="submit">Mendaftarkan Akun</button>
     `;
   }
 }

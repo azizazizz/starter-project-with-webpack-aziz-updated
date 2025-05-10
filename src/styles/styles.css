@@ -99,95 +99,82 @@ header {
 }
 
 /* Login/Register Form Styles */
-.auth-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: calc(100vh - 120px);
-  padding: 2rem 0;
-}
-
-.auth-card {
+.auth {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
   background-color: #2a2a2a;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(255, 102, 0, 0.2);
 }
 
-.auth-title {
+.auth h2 {
   color: #ffa500;
   text-align: center;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
 }
 
-.auth-form {
+.auth form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.form-group {
+.auth input {
+  padding: 0.8rem;
+  border: 1px solid #444;
+  border-radius: 5px;
+  background-color: #333;
+  color: #fff;
+}
+
+.auth button {
+  background-color: #ff6600;
+  color: white;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.auth button:hover {
+  background-color: #ff8533;
+}
+
+.auth .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.form-group label {
+.auth .form-group label {
   font-weight: 500;
-  color: #ccc;
 }
 
-.form-group input {
-  padding: 0.8rem 1rem;
-  border: 1px solid #444;
-  border-radius: 6px;
-  background-color: #333;
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff8800;
   color: #fff;
-  font-size: 1rem;
-  transition: border-color 0.3s;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  font-size: 0.9rem;
+  z-index: 9999;
+  opacity: 0;
+  animation: fadeInOut 3s ease forwards;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #ff6600;
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
 }
 
-.auth-button {
-  background-color: #ff6600;
-  color: white;
-  padding: 0.8rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 0.5rem;
-}
-
-.auth-button:hover {
-  background-color: #ff8533;
-}
-
-.auth-footer {
-  text-align: center;
-  margin-top: 1.5rem;
-  color: #aaa;
-}
-
-.auth-link {
-  color: #ffa500;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-
-.auth-link:hover {
-  color: #ffc266;
-}
 
 /* Add Story Form */
 .add-story {
@@ -327,44 +314,148 @@ header {
   background-color: #555;
 }
 
-/* Camera Styles */
-.new-form__camera__container {
-  display: none;
+/* form tambah cerita */
+.new-form__container {
+  background-color: #1e1e1e;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.3); /* Bayangan oranye */
+  max-width: 900px; /* diperbesar */
+  margin: 0 auto;
+}
+
+/* header */
+.new-story__header {
+  padding: 2rem 0;
   position: relative;
-  margin-top: 1rem;
-  border: 1px solid #444;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-.new-form__camera__container.open {
-  display: block;
-}
-
-.camera-select {
-  width: 100%;
-  padding: 0.5rem;
-  background: #333;
   color: #fff;
-  border: 1px solid #444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
-.new-form__camera__video {
-  width: 100%;
-  background: #000;
+.new-story__header__title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.new-story__header__description {
+  font-size: 1rem;
+}
+
+/* Label dan input */
+.form-control {
+  margin-bottom: 1.5rem;
+}
+
+.form-control label {
   display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-control input,
+.form-control textarea,
+.form-control select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: none;
+  background-color: #2c2c2c;
+  color: white;
+  font-size: 1rem;
+  box-shadow: 0 0 0 2px rgba(255, 87, 34, 0.5);
+  transition: box-shadow 0.3s ease;
+}
+
+.form-control input:focus,
+.form-control textarea:focus,
+.form-control select:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.8);
+}
+
+.form-control textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Tombol */
+.btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #ff5722;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background-color: #e64a19;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid #ff5722;
+  color: #ff5722;
+}
+
+.btn-outline:hover {
+  background-color: #ff5722;
+  color: white;
+}
+
+/* Kamera & map */
+.new-form__camera__container,
+.new-form__location__container {
+  margin-top: 1rem;
+  border-top: 1px solid #444;
+  padding-top: 1rem;
+}
+
+/* Perbaiki ukuran canvas agar tidak terlalu besar */
+.new-form__camera__video,
+.new-form__camera__canvas {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0.5rem;
+  background-color: #2c2c2c;
+  box-shadow: 0 0 10px rgba(255, 87, 34, 0.2);
+  margin-top: 1rem;
 }
 
 .new-form__camera__canvas {
   display: none;
 }
 
-#photo-preview img {
-  max-width: 100%;
-  max-height: 200px;
-  margin-top: 1rem;
-  border-radius: 5px;
+.new-form__camera__container.open .new-form__camera__canvas {
+  display: block;
 }
+
+#map {
+  height: 200px;
+  border-radius: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Output gambar */
+.new-form__documentations__outputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.new-form__documentations__outputs-item img {
+  max-width: 100px;
+  max-height: 100px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
 
 /* Leaflet Map Customization */
 .leaflet-container {

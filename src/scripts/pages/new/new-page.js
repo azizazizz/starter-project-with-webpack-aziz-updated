@@ -5,6 +5,7 @@ import { generateLoaderAbsoluteTemplate } from '../../templates/templates';
 import Camera from '../../utils/camera';
 import Map from '../../utils/map';
 import 'leaflet/dist/leaflet.css';
+import { showToast } from '../../utils/toast';
 
 export default class NewPage {
   #presenter;
@@ -179,6 +180,7 @@ export default class NewPage {
           await this.#camera.launch();
           
           // Setup capture button
+          document.getElementById('camera-canvas').style.display = 'none';
           document.getElementById('camera-take-button').onclick = async () => {
             const image = await this.#camera.takePicture();
             if (image) {
@@ -396,16 +398,15 @@ async #setupForm() {
   }
 
   storeSuccessfully(message) {
-    console.log(message);
-    this.clearForm();
-
-    // Redirect page
-    location.hash = '/';
-  }
+  showToast(message, 'success');
+  this.clearForm();
+  location.hash = '/';
+}
 
   storeFailed(message) {
-    alert(message);
-  }
+  showToast(message, 'error');
+}
+
 
   clearForm() {
     this.#form.reset();

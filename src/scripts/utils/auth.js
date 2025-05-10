@@ -11,7 +11,8 @@ export const login = async ({ email, password }) => {
   const responseJson = await response.json();
 
   if (!response.ok) {
-    throw new Error(responseJson.message || 'Login failed');
+    // Supaya error message bisa ditangani di presenter
+    throw new Error(responseJson.message || 'Login gagal');
   }
 
   return {
@@ -23,33 +24,30 @@ export const login = async ({ email, password }) => {
   };
 };
 
-export const register = async ({ email, name, password }) => {
+export const register = async ({ name, email, password }) => {
   const response = await fetch('https://story-api.dicoding.dev/v1/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, name, password }),
+    body: JSON.stringify({ name, email, password }), // perhatikan urutan name di awal
   });
 
   const responseJson = await response.json();
 
   if (!response.ok) {
+    // Tangkap error supaya presenter bisa munculkan alert
     throw new Error(responseJson.message || 'Registrasi gagal');
   }
 
-  return responseJson; // Format: { error: false, message: "User created successfully" }
+  return responseJson; // { error: false, message: "User created" }
 };
 
 export function getAccessToken() {
   try {
-    const accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
-
-    if (accessToken === 'null' || accessToken === 'undefined') {
-      return null;
-    }
-
-    return accessToken;
+    const token = localStorage.getItem(ACCESS_TOKEN_KEY);
+    if (token === 'null' || token === 'undefined') return null;
+    return token;
   } catch (error) {
-    console.error('getAccessToken: error:', error);
+    console.error('getAccessToken error:', error);
     return null;
   }
 }
@@ -59,7 +57,7 @@ export function putAccessToken(token) {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);
     return true;
   } catch (error) {
-    console.error('putAccessToken: error:', error);
+    console.error('putAccessToken error:', error);
     return false;
   }
 }
@@ -69,7 +67,7 @@ export function removeAccessToken() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     return true;
   } catch (error) {
-    console.error('getLogout: error:', error);
+    console.error('removeAccessToken error:', error);
     return false;
   }
 }

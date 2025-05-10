@@ -13,12 +13,12 @@ export default class RegisterPresenter {
       const response = await this.#authModel.register({ name, email, password }); // Ganti getRegistered → register
 
       if (response.error) {
-        throw new Error(response.message || 'Registrasi gagal');
+        throw new Error(response.message || 'Pendaftaran gagal');
       }
 
-      this.#view.registeredSuccessfully('Registrasi berhasil! Silakan login.');
+      this.#view.registeredSuccessfully('Pendaftaran berhasil! Silakan Masuk.');
     } catch (error) {
-      this.#view.registeredFailed(error.message || 'Terjadi kesalahan saat registrasi');
+      this.#view.registeredFailed(error.message || 'Terjadi kesalahan saat pendaftaran akun');
     } finally {
       this.#view.hideSubmitLoadingButton();
     }
