@@ -3,71 +3,89 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Berbagi pengalaman dan lokasimu dengan DStory App." />
+    <meta
+      name="description"
+      content="Berbagi pengalaman dan lokasimu dengan DStory App."
+    />
 
     <title>DStory App</title>
 
     <link rel="shortcut icon" href="favicon.png" />
-    <link rel="apple-touch-icon" href="favicon.png" /> 
+    <link rel="apple-touch-icon" href="favicon.png" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lexend&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
 
     <!-- Leaflet -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css">
-    
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css"
+    />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Menuju konten utama</a>
 
     <header>
       <div class="header-content container">
-      <a class="brand-name__link" href="#/">
-        <img class="brand-name__link__image" src="images/logo.png" alt="DStory Logo" />
-        <span class="brand-name__link__text">DStory</span>
-      </a>
+        <a class="brand-name__link" href="#/">
+          <img
+            class="brand-name__link__image"
+            src="images/logo.png"
+            alt="DStory Logo"
+          />
+          <span class="brand-name__link__text">DStory</span>
+        </a>
 
-      <button id="drawer-button" class="drawer-button">☰</button>
+        <button id="drawer-button" class="drawer-button">☰</button>
 
-      <div class="nav-container">
-        <nav id="navigation-drawer" class="navigation-drawer">
-          <ul id="navlist-main" class="navigation-drawer__navlist-main"></ul>
-          <ul id="navlist" class="navigation-drawer__navlist"></ul>
-        </nav>
+        <div class="nav-container">
+          <nav id="navigation-drawer" class="navigation-drawer">
+            <ul id="navlist-main" class="navigation-drawer__navlist-main"></ul>
+            <ul id="navlist" class="navigation-drawer__navlist"></ul>
+          </nav>
+        </div>
       </div>
-    </div>
-
     </header>
 
-    <main id="main-content" class="main-content" tabindex="-1">
-      
-    </main>
+    <main id="main-content" class="main-content" tabindex="-1"></main>
 
     <footer>
       <div class="container">
         <hr />
         <div class="footer-content">
           <a class="brand-name__link" href="#/">
-            <img class="brand-name__link__image" src="images/logo.png" alt="DStory Logo" />
+            <img
+              class="brand-name__link__image"
+              src="images/logo.png"
+              alt="DStory Logo"
+            />
             <span class="brand-name__link__text">DStory</span>
           </a>
-          <p class="copyright">
-            &copy; 2025 DStory App - Nur Aziz Raihan
-          </p>
+          <p class="copyright">&copy; 2025 DStory App - Nur Aziz Raihan</p>
         </div>
       </div>
     </footer>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
-
-    <div id="toast-container" class="toast-container"></div>
   </body>
 </html>

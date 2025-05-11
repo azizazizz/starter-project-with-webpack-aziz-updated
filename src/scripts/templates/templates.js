@@ -1,4 +1,3 @@
-
 export const generateMainNavigationListTemplate = () => `
   <ul>
     <li><a href="#/">Home</a></li>
@@ -29,14 +28,18 @@ export const createStoryItemTemplate = (story) => `
 
 export const createAuthTemplate = (isLogin = true) => `
   <section class="auth">
-    <h1>${isLogin ? 'Login' : 'Register'}</h1>
-    <form id="${isLogin ? 'login' : 'register'}-form">
-      ${!isLogin ? `
+    <h1>${isLogin ? "Login" : "Register"}</h1>
+    <form id="${isLogin ? "login" : "register"}-form">
+      ${
+        !isLogin
+          ? `
       <div class="form-group">
         <label for="name">Name</label>
         <input type="text" id="name" name="name" placeholder="Name" required />
       </div>
-      ` : ''}
+      `
+          : ""
+      }
       <div class="form-group">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Email" required />
@@ -45,12 +48,14 @@ export const createAuthTemplate = (isLogin = true) => `
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Password" required />
       </div>
-      <button type="submit" class="btn-submit">${isLogin ? 'Login' : 'Register'}</button>
+      <button type="submit" class="btn-submit">${isLogin ? "Login" : "Register"}</button>
     </form>
     <div class="auth-links">
-      ${isLogin ? 
-        'Belum punya akun? <a href="#/register">Daftar disini</a>' : 
-        'Sudah punya akun? <a href="#/login">Login disini</a>'}
+      ${
+        isLogin
+          ? 'Belum punya akun? <a href="#/register">Daftar disini</a>'
+          : 'Sudah punya akun? <a href="#/login">Login disini</a>'
+      }
     </div>
   </section>
 `;

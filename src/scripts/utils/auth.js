@@ -1,18 +1,17 @@
-import { getActiveRoute } from '../routes/url-parser';
-import { ACCESS_TOKEN_KEY } from '../config';
+import { getActiveRoute } from "../routes/url-parser";
+import { ACCESS_TOKEN_KEY } from "../config";
 
 export const login = async ({ email, password }) => {
-  const response = await fetch('https://story-api.dicoding.dev/v1/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  const response = await fetch("https://story-api.dicoding.dev/v1/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
 
   const responseJson = await response.json();
 
   if (!response.ok) {
-    // Supaya error message bisa ditangani di presenter
-    throw new Error(responseJson.message || 'Login gagal');
+    throw new Error(responseJson.message || "Login gagal");
   }
 
   return {
@@ -25,29 +24,28 @@ export const login = async ({ email, password }) => {
 };
 
 export const register = async ({ name, email, password }) => {
-  const response = await fetch('https://story-api.dicoding.dev/v1/register', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, email, password }), // perhatikan urutan name di awal
+  const response = await fetch("https://story-api.dicoding.dev/v1/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
   });
 
   const responseJson = await response.json();
 
   if (!response.ok) {
-    // Tangkap error supaya presenter bisa munculkan alert
-    throw new Error(responseJson.message || 'Registrasi gagal');
+    throw new Error(responseJson.message || "Registrasi gagal");
   }
 
-  return responseJson; // { error: false, message: "User created" }
+  return responseJson;
 };
 
 export function getAccessToken() {
   try {
     const token = localStorage.getItem(ACCESS_TOKEN_KEY);
-    if (token === 'null' || token === 'undefined') return null;
+    if (token === "null" || token === "undefined") return null;
     return token;
   } catch (error) {
-    console.error('getAccessToken error:', error);
+    console.error("getAccessToken error:", error);
     return null;
   }
 }
@@ -57,7 +55,7 @@ export function putAccessToken(token) {
     localStorage.setItem(ACCESS_TOKEN_KEY, token);
     return true;
   } catch (error) {
-    console.error('putAccessToken error:', error);
+    console.error("putAccessToken error:", error);
     return false;
   }
 }
@@ -67,19 +65,19 @@ export function removeAccessToken() {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     return true;
   } catch (error) {
-    console.error('removeAccessToken error:', error);
+    console.error("removeAccessToken error:", error);
     return false;
   }
 }
 
-const unauthenticatedRoutesOnly = ['/login', '/register'];
+const unauthenticatedRoutesOnly = ["/login", "/register"];
 
 export function checkUnauthenticatedRouteOnly(page) {
   const url = getActiveRoute();
   const isLogin = !!getAccessToken();
 
   if (unauthenticatedRoutesOnly.includes(url) && isLogin) {
-    location.hash = '/';
+    location.hash = "/";
     return null;
   }
 
@@ -90,7 +88,7 @@ export function checkAuthenticatedRoute(page) {
   const isLogin = !!getAccessToken();
 
   if (!isLogin) {
-    location.hash = '/login';
+    location.hash = "/login";
     return null;
   }
 

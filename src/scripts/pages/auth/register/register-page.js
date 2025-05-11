@@ -1,6 +1,6 @@
-import RegisterPresenter from './register-presenter';
-import { showToast } from '../../../utils/toast';
-import { register, putAccessToken } from '../../../utils/auth';
+import RegisterPresenter from "./register-presenter";
+import { register, putAccessToken } from "../../../utils/auth";
+import Swal from "sweetalert2";
 
 export default class RegisterPage {
   #presenter = null;
@@ -42,31 +42,32 @@ export default class RegisterPage {
   }
 
   #setupForm() {
-    document.getElementById('register-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
+    document
+      .getElementById("register-form")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-      const data = {
-        name: document.getElementById('name').value, // Diubah dari 'name-input' ke 'name'
-        email: document.getElementById('email').value, // Diubah dari 'email-input' ke 'email'
-        password: document.getElementById('password').value // Diubah dari 'password-input' ke 'password'
-      };
-      await this.#presenter.getRegistered(data);
+        const data = {
+          name: document.getElementById("name").value,
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        };
+        await this.#presenter.getRegistered(data);
+      });
+  }
+
+  registeredSuccessfully(message) {
+    Swal.fire("Berhasil!", message, "success").then(() => {
+      location.hash = "/login";
     });
   }
 
-
-    registeredSuccessfully(message) {
-    showToast(message, 'success'); // ✅ toast hijau
-    location.hash = '/login';
+  registeredFailed(message) {
+    Swal.fire("Gagal Mendaftar", message, "error");
   }
-
-    registeredFailed(message) {
-    showToast(message, 'error'); // ❌ toast merah
-  }
-
 
   showSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn-submit" type="submit" disabled>
         <i class="fas fa-spinner fa-spin"></i> Mendaftarkan Akun
       </button>
@@ -74,7 +75,7 @@ export default class RegisterPage {
   }
 
   hideSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn-submit" type="submit">Mendaftarkan Akun</button>
     `;
   }

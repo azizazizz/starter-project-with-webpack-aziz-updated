@@ -1,11 +1,13 @@
 export const generateMainNavigationListTemplate = () => `
   <li><a href="#/">Beranda</a></li>
   <li><a href="#/add-story">Tambah Cerita</a></li>
-  <li><a href="#" id="logout-button">Keluar</a></li> <!-- Tombol Keluar hanya ada di sini -->
+  <li><a href="#" id="logout-button">Keluar</a></li>
 `;
 
 export const generateAuthenticatedNavigationListTemplate = () => `
-  <li><a href="#" id="logout-button">Keluar</a></li> <!-- Tombol logout hanya untuk pengguna yang sudah login -->
+  <li><a href="#/">Beranda</a></li>
+  <li><a href="#/add-story">Tambah Cerita</a></li>
+  <li><a href="#" id="logout-button">Keluar</a></li>
 `;
 
 export const generateUnauthenticatedNavigationListTemplate = () => `

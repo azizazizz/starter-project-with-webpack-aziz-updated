@@ -1,8 +1,7 @@
-import {BASE_URL} from '../config';
-import { getAccessToken } from '../utils/auth';
+import { BASE_URL } from "../config";
+import { getAccessToken } from "../utils/auth";
 
 const ENDPOINTS = {
-
   REGISTER: `${BASE_URL}/register`,
   LOGIN: `${BASE_URL}/login`,
   MY_USER_INFO: `${BASE_URL}/users/me`,
@@ -17,8 +16,8 @@ const ENDPOINTS = {
 
 export async function register({ name, email, password }) {
   const response = await fetch(ENDPOINTS.REGISTER, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
   const json = await response.json();
@@ -27,53 +26,58 @@ export async function register({ name, email, password }) {
 
 export async function login({ email, password }) {
   const response = await fetch(ENDPOINTS.LOGIN, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
   const json = await response.json();
   return { ...json, ok: response.ok };
 }
 
-export async function getAllStories({ page = 1, size = 10, location = 0 } = {}) {
+export async function getAllStories({
+  page = 1,
+  size = 10,
+  location = 0,
+} = {}) {
   const token = getAccessToken();
   try {
-    const response = await fetch(`${ENDPOINTS.STORY_LIST}?page=${page}&size=${size}&location=${location}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    
+    const response = await fetch(
+      `${ENDPOINTS.STORY_LIST}?page=${page}&size=${size}&location=${location}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
+
     const responseData = await response.json();
-    
-    // Pastikan struktur data sesuai
+
     if (!responseData.listStory) {
-      throw new Error('Struktur data tidak valid: listStory tidak ditemukan');
+      throw new Error("Struktur data tidak valid: listStory tidak ditemukan");
     }
-    
+
     return {
       ok: true,
-      listStory: responseData.listStory.map(story => ({
+      listStory: responseData.listStory.map((story) => ({
         id: story.id,
-        name: story.name || 'Anonim',
-        description: story.description || '',
-        photoUrl: story.photoUrl || 'default-image.jpg',
+        name: story.name || "Anonim",
+        description: story.description || "",
+        photoUrl: story.photoUrl || "default-image.jpg",
         createdAt: story.createdAt,
         lat: story.lat,
-        lon: story.lon
-      }))
+        lon: story.lon,
+      })),
     };
   } catch (error) {
-    console.error('Error in getAllStories:', error);
+    console.error("Error in getAllStories:", error);
     return {
       ok: false,
-      error: error.message
+      error: error.message,
     };
   }
 }
-
 
 export async function getStoryById(id) {
   const token = getAccessToken();
@@ -86,20 +90,20 @@ export async function getStoryById(id) {
 
 export async function addNewStory({ description, photo, lat, lon }) {
   const token = getAccessToken();
-  
+
   const formData = new FormData();
-  formData.append('description', description);
-  formData.append('photo', photo);
-  formData.append('lat', lat.toString());
-  formData.append('lon', lon.toString());
+  formData.append("description", description);
+  formData.append("photo", photo);
+  formData.append("lat", lat.toString());
+  formData.append("lon", lon.toString());
 
   try {
     const response = await fetch(`${ENDPOINTS.STORY_LIST}`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       },
-      body: formData
+      body: formData,
     });
 
     if (!response.ok) {
@@ -109,32 +113,35 @@ export async function addNewStory({ description, photo, lat, lon }) {
 
     return await response.json();
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     throw error;
   }
 }
 
 export async function addNewGuestStory({ description, photo, lat, lon }) {
   const formData = new FormData();
-  formData.append('description', description);
-  formData.append('photo', photo);
-  if (lat) formData.append('lat', lat);
-  if (lon) formData.append('lon', lon);
+  formData.append("description", description);
+  formData.append("photo", photo);
+  if (lat) formData.append("lat", lat);
+  if (lon) formData.append("lon", lon);
 
   const response = await fetch(ENDPOINTS.STORY_GUEST, {
-    method: 'POST',
+    method: "POST",
     body: formData,
   });
   const json = await response.json();
   return { ...json, ok: response.ok };
 }
 
-export async function subscribePushNotification({ endpoint, keys: { p256dh, auth } }) {
+export async function subscribePushNotification({
+  endpoint,
+  keys: { p256dh, auth },
+}) {
   const token = getAccessToken();
   const response = await fetch(ENDPOINTS.SUBSCRIBE, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ endpoint, keys: { p256dh, auth } }),
@@ -146,9 +153,9 @@ export async function subscribePushNotification({ endpoint, keys: { p256dh, auth
 export async function unsubscribePushNotification({ endpoint }) {
   const token = getAccessToken();
   const response = await fetch(ENDPOINTS.UNSUBSCRIBE, {
-    method: 'DELETE',
+    method: "DELETE",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ endpoint }),

@@ -1,14 +1,15 @@
-import HomePresenter from './home-presenter';
-import * as StoryAPI from '../../data/api';
-import 'leaflet/dist/leaflet.css';
+import HomePresenter from "./home-presenter";
+import * as StoryAPI from "../../data/api";
+import "leaflet/dist/leaflet.css";
+import Swal from "sweetalert2";
 
 export default class HomePage {
   #presenter;
   #stories = [];
   #map = null;
   #markers = [];
-  #currentPage = 1; // Halaman saat ini
-  #pageSize = 10; // Jumlah cerita per halaman
+  #currentPage = 1;
+  #pageSize = 10;
 
   async render() {
     return `
@@ -34,7 +35,7 @@ export default class HomePage {
   async afterRender() {
     this.#presenter = new HomePresenter({
       view: this,
-      model: StoryAPI
+      model: StoryAPI,
     });
 
     try {
@@ -43,158 +44,175 @@ export default class HomePage {
       this.showError(error);
     }
 
-    // Menambahkan event listener pada tombol load more
-    const loadMoreButton = document.getElementById('load-more');
-    if (loadMoreButton) {
-      loadMoreButton.addEventListener('click', this.loadMore.bind(this));
-    }
-  }
+    const loadMoreButton = document.getElementById("load-more");
+    const loadIcon = document.getElementById("load-icon");
 
-  async loadMore() {
-    this.#currentPage++; // Increment halaman saat ini
-    try {
-      await this.#presenter.showStories(this.#currentPage, this.#pageSize);
-    } catch (error) {
-      this.showError(error);
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener("click", async () => {
+        loadIcon.classList.add("fa-spin");
+        loadMoreButton.disabled = true;
+        loadMoreButton.textContent = "Memuat...";
+        loadMoreButton.prepend(loadIcon);
+
+        try {
+          this.#currentPage++;
+          await this.#presenter.showStories(this.#currentPage, this.#pageSize);
+        } catch (error) {
+          this.showError(error);
+        } finally {
+          loadIcon.classList.remove("fa-spin");
+          loadMoreButton.disabled = false;
+          loadMoreButton.innerHTML =
+            '<i class="fas fa-sync-alt" id="load-icon" style="margin-right: 0.5rem;"></i> Muat Lebih Banyak Cerita';
+        }
+      });
     }
   }
 
   showStories(stories) {
     try {
       if (!Array.isArray(stories)) {
-        throw new Error('Data stories harus berupa array');
+        throw new Error("Data stories harus berupa array");
       }
 
-      this.#stories = [...this.#stories, ...stories]; // Menambah cerita baru tanpa menghapus yang lama
-      const storiesList = document.getElementById('stories-list');
-      
+      this.#stories = [...this.#stories, ...stories];
+      const storiesList = document.getElementById("stories-list");
+
       if (!storiesList) {
-        throw new Error('Element stories-list tidak ditemukan');
+        throw new Error("Element stories-list tidak ditemukan");
       }
 
-      storiesList.innerHTML = this.#stories.map(story => {
-        if (!story.photoUrl || !story.description) {
-          console.warn('Story data tidak valid:', story);
-          return '';
-        }
+      storiesList.innerHTML = this.#stories
+        .map((story) => {
+          if (!story.photoUrl || !story.description) {
+            console.warn("Story data tidak valid:", story);
+            return "";
+          }
 
-        let locationText = 'Lokasi tidak diketahui';
-        if (story.lat && story.lon) {
-          const lat = parseFloat(story.lat).toFixed(6);
-          const lon = parseFloat(story.lon).toFixed(6);
-          locationText = `Lokasi: ${lat}, ${lon}`;
-        }
+          let locationText = "Lokasi tidak diketahui";
+          if (story.lat && story.lon) {
+            const lat = parseFloat(story.lat).toFixed(6);
+            const lon = parseFloat(story.lon).toFixed(6);
+            locationText = `Lokasi: ${lat}, ${lon}`;
+          }
 
-        return `
+          return `
           <div class="story-card">
             <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
             <div class="story-content">
-              <h3>${story.name || 'Anonim'}</h3>
-              <p class="story-date">${story.createdAt ? new Date(story.createdAt).toLocaleDateString() : 'Tanggal tidak tersedia'}</p>
+              <h3>${story.name || "Anonim"}</h3>
+              <p class="story-date">${story.createdAt ? new Date(story.createdAt).toLocaleDateString() : "Tanggal tidak tersedia"}</p>
               <p class="story-location">${locationText}</p>
-              <p>${story.description.substring(0, 100)}${story.description.length > 100 ? '...' : ''}</p>
+              <p>${story.description.substring(0, 100)}${story.description.length > 100 ? "..." : ""}</p>
             </div>
           </div>
         `;
-      }).join('');
-      
+        })
+        .join("");
+
       this.#initMap();
     } catch (error) {
-      console.error('Error in showStories:', error);
+      console.error("Error in showStories:", error);
       this.showError(error);
     }
   }
 
   async #initMap() {
     try {
-    const loadingElement = document.getElementById('map-loading');
-    if (loadingElement) loadingElement.style.display = 'block';
+      const loadingElement = document.getElementById("map-loading");
+      if (loadingElement) loadingElement.style.display = "block";
 
-    await this.cleanup();
+      await this.cleanup();
 
-    const mapElement = document.getElementById('stories-map');
-    if (!mapElement || mapElement.offsetWidth === 0 || mapElement.offsetHeight === 0) {
-      console.warn('Map container belum siap atau memiliki ukuran 0.');
-      return;
-    }
+      const mapElement = document.getElementById("stories-map");
+      if (
+        !mapElement ||
+        mapElement.offsetWidth === 0 ||
+        mapElement.offsetHeight === 0
+      ) {
+        console.warn("Map container belum siap atau memiliki ukuran 0.");
+        return;
+      }
 
-    const L = await import('leaflet');
+      const L = await import("leaflet");
 
-    const attribution =
-      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors ' +
-      '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>';
+      const attribution =
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors ' +
+        '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>';
 
-    const tileStreets = L.tileLayer(`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=kE4NvcySWZU5cDQjqzgT`, {
-      attribution,
-      tileSize: 512,
-      zoomOffset: -1,
-    });
+      const tileStreets = L.tileLayer(
+        `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=kE4NvcySWZU5cDQjqzgT`,
+        {
+          attribution,
+          tileSize: 512,
+          zoomOffset: -1,
+        },
+      );
 
-    const tileSatellite = L.tileLayer(`https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=OCxf3aKSk6gkj1aQKlOR`, {
-      attribution,
-      tileSize: 512,
-      zoomOffset: -1,
-    });
+      const tileSatellite = L.tileLayer(
+        `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=OCxf3aKSk6gkj1aQKlOR`,
+        {
+          attribution,
+          tileSize: 512,
+          zoomOffset: -1,
+        },
+      );
 
-    this.#map = L.map('stories-map', {
-      center: [-6.1754, 106.8272],
-      zoom: 5,
-      layers: [tileStreets],
-      preferCanvas: true,
-    });
+      this.#map = L.map("stories-map", {
+        center: [-6.1754, 106.8272],
+        zoom: 5,
+        layers: [tileStreets],
+        preferCanvas: true,
+      });
 
-    // Ensure map container is fully loaded before calling invalidateSize
-    setTimeout(() => {
-      if (this.#map) this.#map.invalidateSize();
-    }, 300);
+      setTimeout(() => {
+        if (this.#map) this.#map.invalidateSize();
+      }, 300);
 
-    const baseLayers = {
-      'Streets': tileStreets,
-      'Satellite': tileSatellite,
-    };
+      const baseLayers = {
+        Streets: tileStreets,
+        Satellite: tileSatellite,
+      };
 
-    L.control.layers(baseLayers).addTo(this.#map);
+      L.control.layers(baseLayers).addTo(this.#map);
 
-    // Initialize markers
-    this.#markers = this.#stories
-      .filter(story => story.lat && story.lon)
-      .map(story => {
-        const marker = L.marker([story.lat, story.lon]).addTo(this.#map);
-        marker.bindPopup(`
+      this.#markers = this.#stories
+        .filter((story) => story.lat && story.lon)
+        .map((story) => {
+          const marker = L.marker([story.lat, story.lon]).addTo(this.#map);
+          marker.bindPopup(`
           <div class="popup-content">
             <img src="${story.photoUrl}" width="150" style="margin: 5px 0;">
-            <h4>${story.name || 'Anonim'}</h4>
+            <h4>${story.name || "Anonim"}</h4>
             <p>${story.description}</p>
             <small>${new Date(story.createdAt).toLocaleDateString()}</small>
           </div>
         `);
-        return marker;
-      });
-
-    // Ensure map bounds are updated after markers are added
-    if (this.#markers.length > 0) {
-      const group = new L.featureGroup(this.#markers);
-      setTimeout(() => {
-      if (this.#map && group.getBounds().isValid()) {
-        this.#map.fitBounds(group.getBounds(), {
-          padding: [50, 50], // biar gak terlalu mepet ke pinggir
-          animate: true,
-          duration: 1,
+          return marker;
         });
-      }
-    }, 300); // cukup kecil agar semua marker sudah siap
-    }
 
+      if (this.#markers.length > 0) {
+        const group = new L.featureGroup(this.#markers);
+        setTimeout(() => {
+          if (this.#map && group.getBounds().isValid()) {
+            this.#map.fitBounds(group.getBounds(), {
+              padding: [50, 50],
+              animate: true,
+              duration: 1,
+            });
+          }
+        }, 300);
+      }
     } catch (error) {
-      console.error('Map initialization error:', error);
+      console.error("Map initialization error:", error);
     } finally {
-      const loadingElement = document.getElementById('map-loading');
-      if (loadingElement) loadingElement.style.display = 'none';
+      const loadingElement = document.getElementById("map-loading");
+      if (loadingElement) loadingElement.style.display = "none";
     }
   }
 
   async cleanup() {
-    this.#markers.forEach(marker => {
+    this.#markers.forEach((marker) => {
       if (marker && marker.remove) {
         marker.remove();
       }
@@ -206,22 +224,22 @@ export default class HomePage {
       this.#map = null;
     }
 
-    const mapContainer = document.getElementById('stories-map');
+    const mapContainer = document.getElementById("stories-map");
     if (mapContainer) {
-      mapContainer.innerHTML = '';
+      mapContainer.innerHTML = "";
     }
   }
 
   showError(error) {
-    console.error('Failed to load stories:', error);
-    const container = document.querySelector('.content');
-    if (container) {
-      container.innerHTML = `
-        <div class="error-message">
-          <p>Gagal memuat cerita. Silakan coba lagi nanti.</p>
-          <p>${error.message}</p>
-        </div>
-      `;
-    }
+    console.error("Failed to load stories:", error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Gagal Memuat Cerita",
+      text:
+        error.message ||
+        "Terjadi kesalahan saat memuat data. Silakan coba lagi nanti.",
+      confirmButtonColor: "#d33",
+    });
   }
 }

@@ -1,12 +1,12 @@
-const common = require('./webpack.common.js');
-const { merge } = require('webpack-merge');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const common = require("./webpack.common.js");
+const { merge } = require("webpack-merge");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = merge(common, {
-  mode: 'production',
-  devtool: 'source-map',
+  mode: "production",
+  devtool: "source-map",
   module: {
     rules: [
       {
@@ -14,7 +14,7 @@ module.exports = merge(common, {
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               importLoaders: 1,
             },
@@ -25,8 +25,8 @@ module.exports = merge(common, {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'styles/[name].[contenthash].css',
-      chunkFilename: 'styles/[id].[contenthash].css',
+      filename: "styles/[name].[contenthash].css",
+      chunkFilename: "styles/[id].[contenthash].css",
     }),
   ],
   optimization: {
@@ -38,11 +38,11 @@ module.exports = merge(common, {
       new CssMinimizerPlugin(),
     ],
     splitChunks: {
-      chunks: 'all',
+      chunks: "all",
     },
   },
   performance: {
-    hints: 'warning',
+    hints: "warning",
     maxEntrypointSize: 512000,
     maxAssetSize: 512000,
   },

@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export default class LoginPresenter {
   #view;
   #authModel;
@@ -11,10 +13,16 @@ export default class LoginPresenter {
     this.#view.showSubmitLoadingButton();
     try {
       const { token } = await this.#authModel.login({ email, password });
-      this.#authModel.putAccessToken(token); // Simpan token
-      this.#view.loginSuccessfully("Berhasil Masuk!");
+      this.#authModel.putAccessToken(token);
+
+      await Swal.fire("Berhasil Masuk!", "", "success");
+      location.hash = "/";
     } catch (error) {
-      this.#view.loginFailed(error.message || "Email atau password salah");
+      Swal.fire(
+        "Gagal Masuk",
+        error.message || "Email atau password salah",
+        "error",
+      );
     } finally {
       this.#view.hideSubmitLoadingButton();
     }

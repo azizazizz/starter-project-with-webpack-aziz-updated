@@ -2,17 +2,17 @@ export function sleep(time = 1000) {
   return new Promise((resolve) => setTimeout(resolve, time));
 }
 
-export function showFormattedDate(date, locale = 'en-US', options = {}) {
+export function showFormattedDate(date, locale = "en-US", options = {}) {
   return new Date(date).toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+    year: "numeric",
+    month: "long",
+    day: "numeric",
     ...options,
   });
 }
 
 export async function createCarousel(containerElement, options = {}) {
-  const { tns } = await import('tiny-slider');
+  const { tns } = await import("tiny-slider");
 
   return tns({
     container: containerElement,
@@ -21,7 +21,7 @@ export async function createCarousel(containerElement, options = {}) {
     speed: 600,
 
     nav: true,
-    navPosition: 'bottom',
+    navPosition: "bottom",
 
     autoplay: false,
     controls: false,
@@ -30,9 +30,6 @@ export async function createCarousel(containerElement, options = {}) {
   });
 }
 
-/**
- * Ref: https://stackoverflow.com/questions/18650168/convert-blob-to-base64
- */
 export function convertBlobToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -42,10 +39,11 @@ export function convertBlobToBase64(file) {
   });
 }
 
-/**
- * Ref: https://stackoverflow.com/questions/16245767/creating-a-blob-from-a-base64-string-in-javascript
- */
-export function convertBase64ToBlob(base64Data, contentType = '', sliceSize = 512) {
+export function convertBase64ToBlob(
+  base64Data,
+  contentType = "",
+  sliceSize = 512,
+) {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
 
@@ -65,8 +63,8 @@ export function convertBase64ToBlob(base64Data, contentType = '', sliceSize = 51
 }
 
 export function convertBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
   const rawData = atob(base64);
   const outputArray = new Uint8Array(rawData.length);
 
@@ -79,11 +77,11 @@ export function convertBase64ToUint8Array(base64String) {
 export function setupSkipToContent(element, mainContent) {
   if (!element || !mainContent) return;
 
-  element.addEventListener('click', (e) => {
+  element.addEventListener("click", (e) => {
     e.preventDefault();
 
-    if (!mainContent.hasAttribute('tabindex')) {
-      mainContent.setAttribute('tabindex', '-1');
+    if (!mainContent.hasAttribute("tabindex")) {
+      mainContent.setAttribute("tabindex", "-1");
     }
 
     mainContent.focus();
@@ -92,10 +90,12 @@ export function setupSkipToContent(element, mainContent) {
 
 export function transitionHelper({ skipTransition = false, updateDOM }) {
   if (skipTransition || !document.startViewTransition) {
-    const updateCallbackDone = Promise.resolve(updateDOM()).then(() => undefined);
+    const updateCallbackDone = Promise.resolve(updateDOM()).then(
+      () => undefined,
+    );
 
     return {
-      ready: Promise.reject(Error('View transitions unsupported')),
+      ready: Promise.reject(Error("View transitions unsupported")),
       updateCallbackDone,
       finished: updateCallbackDone,
     };

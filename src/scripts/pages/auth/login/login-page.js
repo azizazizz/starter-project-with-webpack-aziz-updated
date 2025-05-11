@@ -1,6 +1,6 @@
-import LoginPresenter from './login-presenter';
-import { showToast } from '../../../utils/toast';
-import { login, putAccessToken } from '../../../utils/auth';
+import LoginPresenter from "./login-presenter";
+import { login, putAccessToken } from "../../../utils/auth";
+import Swal from "sweetalert2";
 
 export default class LoginPage {
   #presenter = null;
@@ -39,29 +39,31 @@ export default class LoginPage {
   }
 
   #setupForm() {
-    document.getElementById('login-form').addEventListener('submit', async (event) => {
-      event.preventDefault();
+    document
+      .getElementById("login-form")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-      const data = {
-        email: document.getElementById('email').value,
-        password: document.getElementById('password').value,
-      };
-      await this.#presenter.getLogin(data);
-    });
+        const data = {
+          email: document.getElementById("email").value,
+          password: document.getElementById("password").value,
+        };
+        await this.#presenter.getLogin(data);
+      });
   }
 
   loginSuccessfully(message) {
-  showToast(message, 'success');
-  location.hash = '/';
-}
+    Swal.fire("Berhasil!", message, "success").then(() => {
+      location.hash = "/";
+    });
+  }
 
   loginFailed(message) {
-  showToast(message, 'error');
-}
-
+    Swal.fire("Gagal Login", message, "error");
+  }
 
   showSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn-submit" type="submit" disabled>
         <i class="fas fa-spinner fa-spin"></i> Masuk Akun
       </button>
@@ -69,7 +71,7 @@ export default class LoginPage {
   }
 
   hideSubmitLoadingButton() {
-    document.getElementById('submit-button-container').innerHTML = `
+    document.getElementById("submit-button-container").innerHTML = `
       <button class="btn-submit" type="submit">Masuk</button>
     `;
   }

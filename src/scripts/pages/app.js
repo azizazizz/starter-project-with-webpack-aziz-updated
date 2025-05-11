@@ -2,12 +2,12 @@ import {
   generateMainNavigationListTemplate,
   generateAuthenticatedNavigationListTemplate,
   generateUnauthenticatedNavigationListTemplate,
-} from '../templates/navigation-templates';
-import { getActiveRoute } from '../routes/url-parser';
-import { setupSkipToContent } from '../utils';
-import { getAccessToken, getLogout } from '../utils/auth';
-import { showToast } from '../utils/toast';
-import { routes } from '../routes/routes';
+} from "../templates/navigation-templates";
+import { getActiveRoute } from "../routes/url-parser";
+import { setupSkipToContent } from "../utils";
+import { getAccessToken, getLogout } from "../utils/auth";
+import { routes } from "../routes/routes";
+import Swal from "sweetalert2";
 
 export default class App {
   #content;
@@ -30,88 +30,104 @@ export default class App {
 
   #init() {
     setupSkipToContent(this.#skipLinkButton, this.#content);
-    this.#navigationDrawer = document.querySelector('.navigation-drawer');
+    this.#navigationDrawer = document.querySelector(".navigation-drawer");
     this.#setupDrawer();
-    this.#setupNavigationList(); // <- tambahkan ini agar header terisi saat awal load
+    this.#setupNavigationList();
     this.#setupHashChangeListener();
   }
 
-
-#setupDrawer() {
-  // Pastikan elemen ada
-  if (!this.#drawerButton || !this.#navigationDrawer) {
-    console.error('Drawer elements not found');
-    return;
-  }
-
-  // Handle klik tombol hamburger
-  this.#drawerButton.addEventListener('click', (e) => {
-    e.stopPropagation(); // Hindari event bubbling
-    this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main').classList.toggle('open');
-  });
-
-  // Handle klik di luar menu
-  document.addEventListener('click', (event) => {
-    const navList = this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main');
-    if (navList.classList.contains('open')) {
-      const isClickInside = this.#navigationDrawer.contains(event.target);
-      const isClickOnButton = this.#drawerButton.contains(event.target);
-      
-      if (!isClickInside && !isClickOnButton) {
-        navList.classList.remove('open');
-      }
+  #setupDrawer() {
+    if (!this.#drawerButton || !this.#navigationDrawer) {
+      console.error("Drawer elements not found");
+      return;
     }
-  });
 
-  // Tutup menu saat link diklik
-  this.#navigationDrawer.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main').classList.remove('open');
+    this.#drawerButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.#navigationDrawer
+        .querySelector(".navigation-drawer__navlist-main")
+        .classList.toggle("open");
     });
-  });
-}
+
+    document.addEventListener("click", (event) => {
+      const navList = this.#navigationDrawer.querySelector(
+        ".navigation-drawer__navlist-main",
+      );
+      if (navList.classList.contains("open")) {
+        const isClickInside = this.#navigationDrawer.contains(event.target);
+        const isClickOnButton = this.#drawerButton.contains(event.target);
+
+        if (!isClickInside && !isClickOnButton) {
+          navList.classList.remove("open");
+        }
+      }
+    });
+
+    this.#navigationDrawer.querySelectorAll("a").forEach((link) => {
+      link.addEventListener("click", () => {
+        this.#navigationDrawer
+          .querySelector(".navigation-drawer__navlist-main")
+          .classList.remove("open");
+      });
+    });
+  }
 
   #setupNavigationList() {
     try {
       const isLogin = !!getAccessToken();
-      const navListMain = this.#drawerNavigation?.querySelector('#navlist-main');
-      const navList = this.#drawerNavigation?.querySelector('#navlist');
+      const navListMain =
+        this.#drawerNavigation?.querySelector("#navlist-main");
+      const navList = this.#drawerNavigation?.querySelector("#navlist");
 
-      if (!navListMain || !navList) throw new Error('Navigation elements not found');
+      if (!navListMain || !navList)
+        throw new Error("Navigation elements not found");
 
-      // Menampilkan menu berdasarkan status login
       if (!isLogin) {
         navListMain.innerHTML = generateUnauthenticatedNavigationListTemplate();
-        navList.innerHTML = ''; // Tidak perlu menambahkan apa pun di sini jika belum login
+        navList.innerHTML = "";
       } else {
-        navListMain.innerHTML = generateMainNavigationListTemplate(); // Untuk pengguna yang login
-        navList.innerHTML = ''; // Hapus template unauthenticated jika sudah login
+        navListMain.innerHTML = generateMainNavigationListTemplate();
+        navList.innerHTML = "";
       }
 
-      // Menangani event logout
-      const logoutButton = document.getElementById('logout-button');
+      const logoutButton = document.getElementById("logout-button");
       if (logoutButton) {
-        logoutButton.addEventListener('click', (e) => {
+        logoutButton.addEventListener("click", (e) => {
           e.preventDefault();
-          if (confirm('Apakah Anda yakin ingin keluar?')) {
-            getLogout();
-            showToast('Berhasil Keluar', 'success');
-            location.hash = '/login';
-          }
+          Swal.fire({
+            title: "Apakah Anda yakin ingin keluar?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Ya, keluar",
+            cancelButtonText: "Batal",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              getLogout();
+              Swal.fire(
+                "Berhasil Keluar",
+                "Anda telah keluar dari akun.",
+                "success",
+              ).then(() => {
+                location.hash = "/login";
+              });
+            }
+          });
         });
       }
     } catch (error) {
-      console.error('Navigation setup error:', error);
+      console.error("Navigation setup error:", error);
     }
   }
 
   #setupHashChangeListener() {
-    window.addEventListener('hashchange', () => {
+    window.addEventListener("hashchange", () => {
       clearTimeout(this.#hashChangeTimeout);
       this.#hashChangeTimeout = setTimeout(async () => {
         await this.#cleanupCurrentPage();
         await this.renderPage();
-      }, 100); // debounce 100ms
+      }, 100);
     });
   }
 
@@ -130,7 +146,7 @@ export default class App {
     const route = routes[url];
 
     if (!route) {
-      this.#content.innerHTML = '<h1>Halaman tidak ditemukan</h1>';
+      this.#content.innerHTML = "<h1>Halaman tidak ditemukan</h1>";
       this.#isTransitioning = false;
       return;
     }
@@ -156,19 +172,20 @@ export default class App {
       try {
         const transition = document.startViewTransition(renderContent);
         await transition.ready;
-        scrollTo({ top: 0, behavior: 'smooth' });
+        scrollTo({ top: 0, behavior: "smooth" });
       } catch (error) {
-        if (error.name === 'AbortError') {
-          console.warn('Transisi dibatalkan, melanjutkan dengan render biasa');
+        if (error.name === "AbortError") {
+          console.warn("Transisi dibatalkan, melanjutkan dengan render biasa");
         } else {
-          console.error('Error during view transition:', error);
+          console.error("Error during view transition:", error);
         }
         await renderContent();
       }
     } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Error rendering page:', error);
-        this.#content.innerHTML = '<p>Terjadi kesalahan saat memuat halaman</p>';
+      if (error.name !== "AbortError") {
+        console.error("Error rendering page:", error);
+        this.#content.innerHTML =
+          "<p>Terjadi kesalahan saat memuat halaman</p>";
       }
     } finally {
       this.#isTransitioning = false;

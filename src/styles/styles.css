@@ -1,6 +1,6 @@
 body {
   margin: 0;
-  font-family: 'Lexend', sans-serif;
+  font-family: "Lexend", sans-serif;
   background-color: #1c1c1c;
   color: #f4f4f4;
   line-height: 1.6;
@@ -26,7 +26,7 @@ img {
   position: absolute;
   top: -40px;
   left: 0;
-  background: #ffa500;
+  background: #ff6600;
   color: #000;
   padding: 8px;
   z-index: 100;
@@ -94,28 +94,27 @@ header {
 
 /* Responsive Drawer Toggle */
 .drawer-button {
-  display: none; /* Tombol hamburger disembunyikan di perangkat besar */
+  display: none;
   background: none;
   border: none;
   color: white;
   font-size: 1.8rem;
   cursor: pointer;
-  z-index: 1001; /* Pastikan di atas elemen lain */
-  position: relative; /* Untuk z-index bekerja */
+  z-index: 1001;
+  position: relative;
 }
 
 @media (max-width: 768px) {
   .header {
-    position: relative; /* Untuk positioning absolute child elements */
+    position: relative;
   }
 
-  /* Menyembunyikan daftar navigasi secara default */
   .navigation-drawer__navlist-main {
     display: none;
     flex-direction: column;
     background-color: #ff6600;
     position: absolute;
-    top: 60px; /* Sesuaikan dengan tinggi header */
+    top: 60px;
     right: 1rem;
     width: 200px;
     padding: 1rem;
@@ -125,15 +124,13 @@ header {
     margin: 0;
   }
 
-  /* Menampilkan daftar navigasi ketika tombol hamburger ditekan */
   .navigation-drawer__navlist-main.open {
     display: flex;
   }
 
-  /* Menampilkan tombol hamburger hanya di perangkat kecil */
   .drawer-button {
     display: block;
-    margin-left: auto; /* Posisikan ke kanan */
+    margin-left: auto;
   }
 
   .nav-container {
@@ -145,7 +142,6 @@ header {
 #logout-button {
   cursor: pointer;
 }
-
 
 .main-content {
   padding: 2rem 1rem;
@@ -217,7 +213,7 @@ header {
   color: #fff;
   padding: 1rem 1.5rem;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
   font-size: 0.9rem;
   z-index: 9999;
   opacity: 0;
@@ -225,11 +221,20 @@ header {
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  10%, 90% { opacity: 1; transform: translateX(-50%) translateY(0); }
-  100% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+  10%,
+  90% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
 }
-
 
 /* Add Story Form */
 .add-story {
@@ -369,13 +374,13 @@ header {
   background-color: #555;
 }
 
-/* form tambah cerita */
+/* New Form Container*/
 .new-form__container {
   background-color: #1e1e1e;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 0 20px rgba(255, 87, 34, 0.3); 
-  max-width: 900px; 
+  box-shadow: 0 0 20px rgba(255, 87, 34, 0.3);
+  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -398,7 +403,7 @@ header {
   font-size: 1rem;
 }
 
-/* Label dan input */
+/* Input And Label */
 .form-control {
   margin-bottom: 1.5rem;
 }
@@ -435,7 +440,7 @@ header {
   resize: vertical;
 }
 
-/* Tombol */
+/* Button */
 .btn {
   padding: 0.75rem 1.5rem;
   background-color: #ff5722;
@@ -487,17 +492,16 @@ header {
   width: 100%;
 }
 
-/* Pastikan video dan canvas menyesuaikan container */
 .new-form__camera__video,
 .new-form__camera__canvas {
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3; /* Pertahankan rasio video standar */
+  aspect-ratio: 4 / 3;
   border-radius: 0.5rem;
   background-color: #2c2c2c;
   box-shadow: 0 0 10px rgba(255, 87, 34, 0.2);
   margin-top: 1rem;
-  object-fit: cover; /* Pastikan video/canvas tidak gepeng */
+  object-fit: cover;
 }
 
 .new-form__camera__canvas {
@@ -508,7 +512,7 @@ header {
   display: block;
 }
 
-/* Container untuk output gambar */
+/* Container for image output */
 .new-form__documentations__outputs {
   display: flex;
   flex-wrap: wrap;
@@ -530,8 +534,6 @@ header {
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
-
-
 
 /* Leaflet Map Customization */
 .leaflet-container {
@@ -659,7 +661,7 @@ header {
 .content {
   margin: 0 auto;
   padding: 0;
-  max-width: 100%; /* pastikan tidak dibatasi */
+  max-width: 100%;
 }
 
 /* Footer Styles */
@@ -684,7 +686,7 @@ footer hr {
   margin: 1rem 0;
 }
 
-/* Utility Classes */
+/* Utility Class */
 .error-message {
   background: #3a1a1a;
   padding: 1rem;
@@ -704,8 +706,12 @@ footer hr {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 #map {
@@ -730,6 +736,32 @@ footer hr {
 }
 
 @keyframes fa-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/*sweetalert2 */
+.swal2-popup {
+  background-color: #000;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+.swal2-title {
+  color: #fff;
+}
+
+.swal2-footer {
+  color: #ccc;
+}
+
+.swal2-styled {
+  background-color: #ff6600;
+  color: white;
+  border-radius: 5px;
 }
