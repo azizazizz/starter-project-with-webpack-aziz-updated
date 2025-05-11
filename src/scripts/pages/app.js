@@ -145,7 +145,7 @@ export default class App {
     this.#isTransitioning = true;
 
     const url = getActiveRoute();
-    console.log("Mengakses route:", url); // Log URL untuk debugging
+    console.log("Mengakses route:", url);
     const route = routes[url];
 
     if (!route) {

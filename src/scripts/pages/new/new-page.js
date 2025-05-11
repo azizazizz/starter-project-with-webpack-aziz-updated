@@ -22,7 +22,7 @@ export default class NewPage {
           <div class="container">
             <h1 class="new-story__header__title">Tambah Cerita</h1>
             <p class="new-story__header__description">
-              Silahkan lengkapi isi deskripsi cerita anda.<br>
+              Silahkan lengkapi isi cerita anda.<br>
             </p>
           </div>
         </div>
@@ -31,20 +31,7 @@ export default class NewPage {
       <section class="container">
         <div class="new-form__container">
           <form id="new-form" class="new-form">
-            <div class="form-control">
-              <label for="title-input" class="new-form__title__title">Judul Cerita</label>
-  
-              <div class="new-form__title__container">
-                <input
-                  id="title-input"
-                  name="title"
-                  placeholder="Masukkan Judul Cerita Anda"
-                  aria-describedby="title-input-more-info"
-                >
-              </div>
-              <div id="title-input-more-info">Pastikan judul cerita anda dibuat dengan jelas dan deskriptif dalam 1 kalimat.</div>
-            </div>
-  
+          
             <div class="form-control">
               <label for="description-input" class="new-form__description__title">Deskripsikan Cerita Anda</label>
   
@@ -56,9 +43,10 @@ export default class NewPage {
                 ></textarea>
               </div>
             </div>
+
             <div class="form-control">
               <label for="documentations-input" class="new-form__documentations__title">Dokumentasi</label>
-              <div id="documentations-more-info">Anda dapat menyertakan foto sebagai dokumentasi.</div>
+              <div id="documentations-more-info">Anda wajib menyertakan foto sebagai dokumentasi.</div>
   
               <div class="new-form__documentations__container">
                 <div class="new-form__documentations__buttons">

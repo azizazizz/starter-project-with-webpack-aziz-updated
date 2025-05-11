@@ -18,9 +18,8 @@ export default class LoginPresenter {
 
       await Swal.fire("Berhasil Masuk!", "", "success");
 
-      // Redirect dan refresh agar `getAccessToken()` terbaca saat render HomePage
       location.hash = "/";
-      window.location.reload(); // <-- tambahkan ini
+      window.location.reload();
     } catch (error) {
       Swal.fire(
         "Gagal Masuk",
