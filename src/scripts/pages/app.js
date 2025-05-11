@@ -79,8 +79,10 @@ export default class App {
         this.#drawerNavigation?.querySelector("#navlist-main");
       const navList = this.#drawerNavigation?.querySelector("#navlist");
 
-      if (!navListMain || !navList)
-        throw new Error("Navigation elements not found");
+      if (!navListMain || !navList) {
+        console.error("Navigation elements not found");
+        return;
+      }
 
       if (!isLogin) {
         navListMain.innerHTML = generateUnauthenticatedNavigationListTemplate();
@@ -132,7 +134,7 @@ export default class App {
   }
 
   async #cleanupCurrentPage() {
-    if (this.#currentPage?.cleanup instanceof Function) {
+    if (this.#currentPage && typeof this.#currentPage.cleanup === "function") {
       await this.#currentPage.cleanup();
     }
     this.#currentPage = null;
@@ -143,6 +145,7 @@ export default class App {
     this.#isTransitioning = true;
 
     const url = getActiveRoute();
+    console.log("Mengakses route:", url); // Log URL untuk debugging
     const route = routes[url];
 
     if (!route) {
@@ -157,11 +160,16 @@ export default class App {
       }
 
       this.#currentPage = route();
+      console.log("Rendering page:", this.#currentPage);
 
       const renderContent = async () => {
-        this.#content.innerHTML = await this.#currentPage.render();
-        await this.#currentPage.afterRender();
-        this.#setupNavigationList();
+        if (this.#content && this.#currentPage) {
+          this.#content.innerHTML = await this.#currentPage.render();
+          await this.#currentPage.afterRender();
+          this.#setupNavigationList();
+        } else {
+          console.error("Konten atau halaman tidak ditemukan.");
+        }
       };
 
       if (!document.startViewTransition) {

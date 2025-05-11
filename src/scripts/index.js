@@ -12,15 +12,4 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   await app.renderPage();
-
-  window.addEventListener("hashchange", async () => {
-    if (
-      window.currentPage &&
-      typeof window.currentPage.cleanup === "function"
-    ) {
-      await window.currentPage.cleanup();
-    }
-
-    await app.renderPage();
-  });
 });

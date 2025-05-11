@@ -8,9 +8,8 @@ import {
 } from "../utils/auth";
 
 export const routes = {
+  "/": () => checkAuthenticatedRoute(new HomePage()),
   "/login": () => checkUnauthenticatedRouteOnly(new LoginPage()),
   "/register": () => checkUnauthenticatedRouteOnly(new RegisterPage()),
-
-  "/": () => checkAuthenticatedRoute(new HomePage()),
   "/add-story": () => checkAuthenticatedRoute(new NewPage()),
 };

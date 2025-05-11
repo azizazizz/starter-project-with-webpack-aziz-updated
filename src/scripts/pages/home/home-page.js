@@ -17,11 +17,9 @@ export default class HomePage {
       <h1 class="explore__label">Cerita Terkini</h1>
       <div id="stories-list" class="stories-list"></div>
 
-      <!-- Tombol Load More -->
       <button id="load-more" class="btn btn-load-more"><i class="fas fa-sync-alt" id="load-icon" style="margin-right: 0.5rem;"></i>
       Muat Lebih Banyak Cerita</button>
 
-      <!-- Menambahkan container untuk peta -->
       <h2 class="explore__label">Lokasi Cerita</h2>
       <div id="stories-map" style="height: 400px;"></div>
 

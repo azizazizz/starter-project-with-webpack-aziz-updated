@@ -1,5 +1,5 @@
 import LoginPresenter from "./login-presenter";
-import { login, putAccessToken } from "../../../utils/auth";
+import { login, putAccessToken, getAccessToken } from "../../../utils/auth";
 import Swal from "sweetalert2";
 
 export default class LoginPage {
@@ -30,10 +30,15 @@ export default class LoginPage {
   }
 
   async afterRender() {
+    console.log("Mempersiapkan presenter...");
     this.#presenter = new LoginPresenter({
       view: this,
       authModel: { login, putAccessToken },
     });
+
+    if (!this.#presenter) {
+      console.error("Presenter gagal dibuat.");
+    }
 
     this.#setupForm();
   }
