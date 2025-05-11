@@ -30,14 +30,12 @@ export default class LoginPage {
   }
 
   async afterRender() {
-    console.log("Mempersiapkan presenter...");
     this.#presenter = new LoginPresenter({
       view: this,
       authModel: { login, putAccessToken },
     });
 
     if (!this.#presenter) {
-      console.error("Presenter gagal dibuat.");
     }
 
     this.#setupForm();

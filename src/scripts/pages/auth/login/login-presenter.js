@@ -13,7 +13,6 @@ export default class LoginPresenter {
     this.#view.showSubmitLoadingButton();
     try {
       const { token } = await this.#authModel.login({ email, password });
-      console.log("Token dari login API:", token);
       this.#authModel.putAccessToken(token);
 
       await Swal.fire("Berhasil Masuk!", "", "success");

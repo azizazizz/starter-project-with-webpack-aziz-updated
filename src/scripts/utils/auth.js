@@ -86,7 +86,6 @@ export function checkUnauthenticatedRouteOnly(page) {
 
 export function checkAuthenticatedRoute(page) {
   const token = getAccessToken();
-  console.log("checkAuthenticatedRoute - token:", token);
   if (!token) {
     location.hash = "/login";
     return null;

@@ -145,7 +145,6 @@ export default class App {
     this.#isTransitioning = true;
 
     const url = getActiveRoute();
-    console.log("Mengakses route:", url);
     const route = routes[url];
 
     if (!route) {
@@ -160,7 +159,6 @@ export default class App {
       }
 
       this.#currentPage = route();
-      console.log("Rendering page:", this.#currentPage);
 
       const renderContent = async () => {
         if (this.#content && this.#currentPage) {

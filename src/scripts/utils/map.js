@@ -91,7 +91,7 @@ export default class Map {
       '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>';
 
     const tileStreets = tileLayer(
-      `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=kE4NvcySWZU5cDQjqzgT`,
+      `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=LWXYHfZ6vqc0OB0xURAz`,
       {
         attribution,
         tileSize: 512,
@@ -100,7 +100,7 @@ export default class Map {
     );
 
     const tileSatellite = tileLayer(
-      `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=OCxf3aKSk6gkj1aQKlOR`,
+      `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=LWXYHfZ6vqc0OB0xURAz`,
       {
         attribution,
         tileSize: 512,
