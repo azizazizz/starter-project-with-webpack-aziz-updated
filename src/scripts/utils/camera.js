@@ -37,23 +37,28 @@ export default class Camera {
     }
    
     #initialListener() {
-      this.#videoElement.oncanplay = () => {
-        if (this.#streaming) {
-          return;
-        }
-   
-        this.#height = (this.#videoElement.videoHeight * this.#width) / this.#videoElement.videoWidth;
-        this.#canvasElement.setAttribute('width', this.#width);
-        this.#canvasElement.setAttribute('height', this.#height);
-   
-        this.#streaming = true;
-      };
-      
-      this.#selectCameraElement.onchange = async () => {
-        this.stop();
-        await this.launch();
-      };
-    }
+  this.#videoElement.oncanplay = () => {
+    if (this.#streaming) return;
+
+    // Gunakan ukuran asli dari video untuk lebar dan tinggi
+    this.#width = this.#videoElement.videoWidth;
+    this.#height = this.#videoElement.videoHeight;
+
+    this.#canvasElement.setAttribute('width', this.#width);
+    this.#canvasElement.setAttribute('height', this.#height);
+
+    this.#videoElement.setAttribute('width', this.#width);
+    this.#videoElement.setAttribute('height', this.#height);
+
+    this.#streaming = true;
+  };
+
+  this.#selectCameraElement.onchange = async () => {
+    this.stop();
+    await this.launch();
+  };
+}
+
    
     async #populateDeviceList(stream) {
         try {

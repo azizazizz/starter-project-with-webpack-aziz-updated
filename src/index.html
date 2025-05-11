@@ -7,8 +7,8 @@
 
     <title>DStory App</title>
 
-    <link rel="shortcut icon" href="./public/favicon.png" />
-    <link rel="apple-touch-icon" href="./public/favicon.png" /> 
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="apple-touch-icon" href="favicon.png" /> 
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,18 +29,21 @@
 
     <header>
       <div class="header-content container">
-        <a class="brand-name__link" href="#/">
-          <img class="brand-name__link__image" src="images/logo.png" alt="DStory Logo" />
-          <span class="brand-name__link__text">DStory</span>
-        </a>
+      <a class="brand-name__link" href="#/">
+        <img class="brand-name__link__image" src="images/logo.png" alt="DStory Logo" />
+        <span class="brand-name__link__text">DStory</span>
+      </a>
 
+      <button id="drawer-button" class="drawer-button">☰</button>
+
+      <div class="nav-container">
         <nav id="navigation-drawer" class="navigation-drawer">
           <ul id="navlist-main" class="navigation-drawer__navlist-main"></ul>
           <ul id="navlist" class="navigation-drawer__navlist"></ul>
         </nav>
-
-        <button id="drawer-button" class="drawer-button">☰</button>
       </div>
+    </div>
+
     </header>
 
     <main id="main-content" class="main-content" tabindex="-1">

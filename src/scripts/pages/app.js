@@ -14,6 +14,7 @@ export default class App {
   #drawerButton;
   #drawerNavigation;
   #skipLinkButton;
+  #navigationDrawer;
   #currentPage = null;
   #isTransitioning = false;
   #hashChangeTimeout = null;
@@ -29,58 +30,76 @@ export default class App {
 
   #init() {
     setupSkipToContent(this.#skipLinkButton, this.#content);
-    this.#setupNavigationList();
+    this.#navigationDrawer = document.querySelector('.navigation-drawer');
     this.#setupDrawer();
+    this.#setupNavigationList(); // <- tambahkan ini agar header terisi saat awal load
     this.#setupHashChangeListener();
   }
 
-  #setupDrawer() {
-    this.#drawerButton.addEventListener('click', () => {
-      this.#drawerNavigation.classList.toggle('open');
-    });
 
-    document.body.addEventListener('click', (event) => {
-      const isInsideDrawer = this.#drawerNavigation.contains(event.target);
-      const isInsideButton = this.#drawerButton.contains(event.target);
-
-      if (!isInsideDrawer && !isInsideButton) {
-        this.#drawerNavigation.classList.remove('open');
-      }
-
-      this.#drawerNavigation.querySelectorAll('a').forEach((link) => {
-        if (link.contains(event.target)) {
-          this.#drawerNavigation.classList.remove('open');
-        }
-      });
-    });
+#setupDrawer() {
+  // Pastikan elemen ada
+  if (!this.#drawerButton || !this.#navigationDrawer) {
+    console.error('Drawer elements not found');
+    return;
   }
+
+  // Handle klik tombol hamburger
+  this.#drawerButton.addEventListener('click', (e) => {
+    e.stopPropagation(); // Hindari event bubbling
+    this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main').classList.toggle('open');
+  });
+
+  // Handle klik di luar menu
+  document.addEventListener('click', (event) => {
+    const navList = this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main');
+    if (navList.classList.contains('open')) {
+      const isClickInside = this.#navigationDrawer.contains(event.target);
+      const isClickOnButton = this.#drawerButton.contains(event.target);
+      
+      if (!isClickInside && !isClickOnButton) {
+        navList.classList.remove('open');
+      }
+    }
+  });
+
+  // Tutup menu saat link diklik
+  this.#navigationDrawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      this.#navigationDrawer.querySelector('.navigation-drawer__navlist-main').classList.remove('open');
+    });
+  });
+}
 
   #setupNavigationList() {
     try {
       const isLogin = !!getAccessToken();
-      const navListMain = this.#drawerNavigation?.children?.namedItem('navlist-main');
-      const navList = this.#drawerNavigation?.children?.namedItem('navlist');
+      const navListMain = this.#drawerNavigation?.querySelector('#navlist-main');
+      const navList = this.#drawerNavigation?.querySelector('#navlist');
 
       if (!navListMain || !navList) throw new Error('Navigation elements not found');
 
+      // Menampilkan menu berdasarkan status login
       if (!isLogin) {
         navListMain.innerHTML = generateUnauthenticatedNavigationListTemplate();
-        navList.innerHTML = '';
-        return;
+        navList.innerHTML = ''; // Tidak perlu menambahkan apa pun di sini jika belum login
+      } else {
+        navListMain.innerHTML = generateMainNavigationListTemplate(); // Untuk pengguna yang login
+        navList.innerHTML = ''; // Hapus template unauthenticated jika sudah login
       }
 
-      navListMain.innerHTML = generateMainNavigationListTemplate();
-      navList.innerHTML = generateAuthenticatedNavigationListTemplate();
-
+      // Menangani event logout
       const logoutButton = document.getElementById('logout-button');
-      logoutButton?.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (confirm('Apakah Anda yakin ingin keluar?')) {
-          getLogout();
-          showToast('Berhasil Keluar', 'success');
-          location.hash = '/login';
-        }
-      });
+      if (logoutButton) {
+        logoutButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          if (confirm('Apakah Anda yakin ingin keluar?')) {
+            getLogout();
+            showToast('Berhasil Keluar', 'success');
+            location.hash = '/login';
+          }
+        });
+      }
     } catch (error) {
       console.error('Navigation setup error:', error);
     }

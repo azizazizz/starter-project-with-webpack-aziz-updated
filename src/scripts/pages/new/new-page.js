@@ -89,14 +89,17 @@ export default class NewPage {
                     <button id="camera-take-button" class="btn" type="button">
                       Ambil Gambar
                     </button>
+                    <div id="file-uploaded">Jika ingin menghapus file telampir, klik saja pada filenya.</div>
                   </div>
                 </div>
                 <ul id="documentations-taken-list" class="new-form__documentations__outputs"></ul>
               </div>
             </div>
+
             <div class="form-control">
-              <div class="new-form__location__title">Silahkan Masukkan Lokasi. Geser marker dan pilih manual pada peta</div>
-  
+              <label for="new-form__location__title">Silahkan Masukkan Lokasi.</label>
+              <div id="location-more-info">Anda dapat menggeser marker untuk menentukan lokasi yang tepat.</div>
+              
               <div class="new-form__location__container">
                 <div class="new-form__location__map__container">
                   <div id="map" class="new-form__location__map"></div>

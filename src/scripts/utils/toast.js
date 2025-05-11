@@ -4,9 +4,9 @@ export function showToast(message = '', type = 'info') {
   toast.textContent = message;
   
   if (type === 'error') {
-    toast.style.backgroundColor = '#e74c3c'; // merah
+    toast.style.backgroundColor = '#e74c3c';
   } else if (type === 'success') {
-    toast.style.backgroundColor = '#27ae60'; // hijau
+    toast.style.backgroundColor = '#27ae60';
   }
 
   document.body.appendChild(toast);

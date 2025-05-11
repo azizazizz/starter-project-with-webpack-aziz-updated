@@ -17,9 +17,11 @@ export default class HomePage {
       <div id="stories-list" class="stories-list"></div>
 
       <!-- Tombol Load More -->
-      <button id="load-more" class="btn btn-load-more">Muat Lebih Banyak Cerita</button>
+      <button id="load-more" class="btn btn-load-more"><i class="fas fa-sync-alt" id="load-icon" style="margin-right: 0.5rem;"></i>
+      Muat Lebih Banyak Cerita</button>
 
       <!-- Menambahkan container untuk peta -->
+      <h2 class="explore__label">Lokasi Cerita</h2>
       <div id="stories-map" style="height: 400px;"></div>
 
       <div id="map-loading" class="map-loading" style="display: none;">
@@ -172,18 +174,15 @@ export default class HomePage {
     // Ensure map bounds are updated after markers are added
     if (this.#markers.length > 0) {
       const group = new L.featureGroup(this.#markers);
-      this.#map.whenReady(() => {
-        this.#map.on('zoomend', () => {
-          setTimeout(() => {
-            if (this.#map) {
-              // Only call fitBounds if map is not currently animating
-              if (!this.#map._animatingZoom) {
-                this.#map.fitBounds(group.getBounds());
-              }
-            }
-          }, 500); // Ensure markers are fully loaded
+      setTimeout(() => {
+      if (this.#map && group.getBounds().isValid()) {
+        this.#map.fitBounds(group.getBounds(), {
+          padding: [50, 50], // biar gak terlalu mepet ke pinggir
+          animate: true,
+          duration: 1,
         });
-      });
+      }
+    }, 300); // cukup kecil agar semua marker sudah siap
     }
 
     } catch (error) {
@@ -221,7 +220,6 @@ export default class HomePage {
         <div class="error-message">
           <p>Gagal memuat cerita. Silakan coba lagi nanti.</p>
           <p>${error.message}</p>
-          <button onclick="window.location.reload()">Muat Ulang</button>
         </div>
       `;
     }
