@@ -1,29 +1,18 @@
 export const generateMainNavigationListTemplate = () => `
-  <ul>
-    <li><a href="#/">Home</a></li>
-    <li><a href="#/add-story">Tambah Story</a></li>
-    <li><a href="#/about">Tentang Kami</a></li>
-  </ul>
+  <li><a href="#/">Beranda</a></li>
+  <li><a href="#/add-story">Tambah Cerita</a></li>
+  <li><a href="#" id="logout-button">Keluar</a></li>
+`;
+
+export const generateAuthenticatedNavigationListTemplate = () => `
+  <li><a href="#/">Beranda</a></li>
+  <li><a href="#/add-story">Tambah Cerita</a></li>
+  <li><a href="#" id="logout-button">Keluar</a></li>
 `;
 
 export const generateUnauthenticatedNavigationListTemplate = () => `
-  <ul>
-    <li><a href="#/login">Login</a></li>
-    <li><a href="#/register">Register</a></li>
-  </ul>
-`;
-
-export const createStoryItemTemplate = (story) => `
-  <div class="story-item">
-    <div class="story-photo">
-      <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
-    </div>
-    <div class="story-content">
-      <p class="story-description">${story.description}</p>
-      <p class="story-user">Oleh: ${story.name}</p>
-      <p class="story-date">${new Date(story.createdAt).toLocaleString()}</p>
-    </div>
-  </div>
+  <li><a href="#/login">Masuk</a></li>
+  <li><a href="#/register">Daftar</a></li>
 `;
 
 export const createAuthTemplate = (isLogin = true) => `
@@ -61,57 +50,110 @@ export const createAuthTemplate = (isLogin = true) => `
 `;
 
 export const createAddStoryTemplate = () => `
-  <section class="add-story">
-    <h2>Tambah Cerita</h2>
-    <form id="story-form">
-      <div class="form-group">
-        <label for="description">Deskripsi Cerita</label>
-        <textarea id="description" name="description" placeholder="Deskripsi cerita..." required></textarea>
-      </div>
-      
-      <div class="form-group">
-        <label>Foto</label>
-        <div id="camera-container" class="new-form__camera__container">
-        <select id="camera-select" class="camera-select"></select>
-        <video id="camera-video" class="new-form__camera__video"></video>
-        <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
-        <div class="new-form__camera__tools">
-          <button id="camera-take-button" class="btn" type="button">Ambil Gambar</button>
-        </div>
-      </div>
-      </div>
-      
-      <div class="form-group">
-        <label>Lokasi</label>
-        <div id="map" style="height: 300px; width: 100%;"></div>
-        <div class="location-coords">
-          <div>
-            <label>Latitude:</label>
-            <input type="text" id="lat" name="lat" readonly />
-          </div>
-          <div>
-            <label>Longitude:</label>
-            <input type="text" id="lon" name="lon" readonly />
+  <section>
+        <div class="new-story__header">
+          <div class="container">
+            <h1 class="new-story__header__title">Tambah Cerita</h1>
+            <p class="new-story__header__description">
+              Silahkan lengkapi isi cerita anda.<br>
+            </p>
           </div>
         </div>
-        <button type="button" id="get-location-btn" class="btn">Dapatkan Lokasi Saat Ini</button>
-      </div>
-      
-      <button type="submit" class="btn-submit">Kirim Cerita</button>
-    </form>
-  </section>
-`;
+      </section>
+  
+      <section class="container">
+        <div class="new-form__container">
+          <form id="new-form" class="new-form">
+          
+            <div class="form-control">
+              <label for="description-input" class="new-form__description__title">Deskripsikan Cerita Anda</label>
+  
+              <div class="new-form__description__container">
+                <textarea
+                  id="description-input"
+                  name="description"
+                  placeholder="Masukkan cerita anda. Anda dapat curhat apa saja, dimana, kapan, dll."
+                ></textarea>
+              </div>
+            </div>
 
-export const generateStoryCardTemplate = (story) => `
-  <div class="story-card">
-    <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
-    <div class="story-content">
-      <h3>${story.name}</h3>
-      <p>${story.description.substring(0, 100)}...</p>
-      <small>${new Date(story.createdAt).toLocaleDateString()}</small>
-    </div>
-  </div>
-`;
+            <div class="form-control">
+              <label for="documentations-input" class="new-form__documentations__title">Dokumentasi</label>
+              <div id="documentations-more-info">Anda wajib menyertakan foto sebagai dokumentasi.</div>
+  
+              <div class="new-form__documentations__container">
+                <div class="new-form__documentations__buttons">
+                  <button id="documentations-input-button" class="btn btn-outline" type="button">
+                    Unggah File
+                  </button>
+                  <input
+                    id="documentations-input"
+                    name="documentations"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    hidden="hidden"
+                    aria-multiline="true"
+                    aria-describedby="documentations-more-info"
+                  >
+                  <button id="open-documentations-camera-button" class="btn btn-outline" type="button">
+                    Buka Kamera
+                  </button>
+                </div>
+                <div id="camera-container" class="new-form__camera__container">
+                  <select id="camera-select" class="camera-select"></select>
+                  <video id="camera-video" class="new-form__camera__video">
+                    Video stream not available.
+                  </video>
+                  <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
+                  <div class="new-form__camera__tools">
+                    <button id="camera-take-button" class="btn" type="button">
+                      Ambil Gambar
+                    </button>
+                    <div id="file-uploaded">Jika ingin menghapus file telampir, klik saja pada filenya.</div>
+                  </div>
+                </div>
+                <ul id="documentations-taken-list" class="new-form__documentations__outputs"></ul>
+              </div>
+            </div>
+
+            <div class="form-control">
+              <label for="new-form__location__title">Silahkan Masukkan Lokasi.</label>
+              <div id="location-more-info">Anda dapat menggeser marker untuk menentukan lokasi yang tepat.</div>
+              
+              <div class="new-form__location__container">
+                <div class="new-form__location__map__container">
+                  <div id="map" class="new-form__location__map"></div>
+                  <div id="map-loading-container"></div>
+                </div>
+                <div class="new-form__location__lat-lng">
+                  <input type="number" name="latitude" value="-6.175389" disabled>
+                  <input type="number" name="longitude" value="106.827139" disabled>
+                </div>
+              </div>
+            </div>
+            <div class="form-buttons">
+              <span id="submit-button-container">
+                <button class="btn" type="submit">Bagikan Cerita Anda!</button>
+              </span>
+              <a class="btn btn-outline" href="#/">Batal</a>
+            </div>
+          </form>
+        </div>
+      </section>
+    `;
+
+export const createStoryCardTemplate = (story) => `
+      <div class="story-card">
+        <img src="${story.photoUrl}" alt="${story.description}" loading="lazy">
+          <div class="story-content">
+            <h3>${story.name || "Anonim"}</h3>
+            <p class="story-date">${story.createdAt ? new Date(story.createdAt).toLocaleDateString() : "Tanggal tidak tersedia"}</p>
+            <p class="story-location">${locationText}</p>
+            <p>${story.description.substring(0, 100)}${story.description.length > 100 ? "..." : ""}</p>
+          </div>
+      </div>
+    `;
 
 export function generateLoaderTemplate() {
   return `
