@@ -157,15 +157,49 @@ export default class Camera {
   }
 
   async takePicture() {
-    if (!(this.#width && this.#height)) {
-      return null;
+    if (!this.#streaming || !this.#videoElement) {
+      throw new Error("Camera is not active");
     }
-    const context = this.#canvasElement.getContext("2d");
-    this.#canvasElement.width = this.#width;
-    this.#canvasElement.height = this.#height;
-    context.drawImage(this.#videoElement, 0, 0, this.#width, this.#height);
-    return await new Promise((resolve) => {
-      this.#canvasElement.toBlob((blob) => resolve(blob));
+
+    const videoWidth = this.#videoElement.videoWidth;
+    const videoHeight = this.#videoElement.videoHeight;
+
+    const canvas = document.createElement("canvas");
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(this.#videoElement, 0, 0, canvas.width, canvas.height);
+
+    const maxSize = 1024 * 1024;
+    let quality = 0.9;
+
+    const tryCompress = () => {
+      return new Promise((resolve, reject) => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) return reject(new Error("Failed to capture image"));
+            resolve(blob);
+          },
+          "image/jpeg",
+          quality,
+        );
+      });
+    };
+
+    let blob = await tryCompress();
+
+    while (blob.size > maxSize && quality > 0.3) {
+      quality -= 0.05;
+      blob = await tryCompress();
+    }
+
+    if (blob.size > maxSize) {
+      throw new Error("Unable to compress image below 1MB");
+    }
+
+    return new File([blob], "photo.jpg", {
+      type: "image/jpeg",
+      lastModified: Date.now(),
     });
   }
 

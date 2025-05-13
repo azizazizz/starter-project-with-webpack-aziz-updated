@@ -33,33 +33,24 @@ export async function createCarousel(containerElement, options = {}) {
 export function convertBlobToBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
+    reader.readAsDataURL(file);
   });
 }
 
-export function convertBase64ToBlob(
+export async function convertBase64ToBlob(
   base64Data,
-  contentType = "",
-  sliceSize = 512,
+  defaultContentType = "application/octet-stream",
 ) {
-  const byteCharacters = atob(base64Data);
-  const byteArrays = [];
-
-  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
-    const slice = byteCharacters.slice(offset, offset + sliceSize);
-
-    const byteNumbers = new Array(slice.length);
-    for (let i = 0; i < slice.length; i++) {
-      byteNumbers[i] = slice.charCodeAt(i);
-    }
-
-    const byteArray = new Uint8Array(byteNumbers);
-    byteArrays.push(byteArray);
+  if (base64Data.startsWith("data:")) {
+    const response = await fetch(base64Data);
+    return await response.blob();
   }
 
-  return new Blob(byteArrays, { type: contentType });
+  const dataUrl = `data:${defaultContentType};base64,${base64Data}`;
+  const response = await fetch(dataUrl);
+  return await response.blob();
 }
 
 export function convertBase64ToUint8Array(base64String) {

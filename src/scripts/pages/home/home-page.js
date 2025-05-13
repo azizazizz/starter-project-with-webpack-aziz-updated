@@ -139,7 +139,7 @@ export default class HomePage {
         '&copy; <a href="https://www.maptiler.com/copyright/" target="_blank">MapTiler</a>';
 
       const tileStreets = L.tileLayer(
-        `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=`,
+        `https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=LWXYHfZ6vqc0OB0xURAz`,
         {
           attribution,
           tileSize: 512,
@@ -148,7 +148,7 @@ export default class HomePage {
       );
 
       const tileSatellite = L.tileLayer(
-        `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=`,
+        `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=LWXYHfZ6vqc0OB0xURAz`,
         {
           attribution,
           tileSize: 512,

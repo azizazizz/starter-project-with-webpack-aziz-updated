@@ -22,7 +22,6 @@ export default class NewPresenter {
 
   async postNewStory(data) {
     this.#view.showSubmitLoadingButton();
-
     try {
       await this.#model.addNewStory(data);
       await Swal.fire("Cerita Terkirim", "Cerita berhasil dikirim!", "success");

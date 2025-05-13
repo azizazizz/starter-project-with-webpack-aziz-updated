@@ -27,14 +27,12 @@ export default class NewPage {
           </div>
         </div>
       </section>
-  
+
       <section class="container">
         <div class="new-form__container">
           <form id="new-form" class="new-form">
-          
             <div class="form-control">
               <label for="description-input" class="new-form__description__title">Deskripsikan Cerita Anda</label>
-  
               <div class="new-form__description__container">
                 <textarea
                   id="description-input"
@@ -47,37 +45,26 @@ export default class NewPage {
             <div class="form-control">
               <label for="documentations-input" class="new-form__documentations__title">Dokumentasi</label>
               <div id="documentations-more-info">Anda wajib menyertakan foto sebagai dokumentasi.</div>
-  
               <div class="new-form__documentations__container">
                 <div class="new-form__documentations__buttons">
-                  <button id="documentations-input-button" class="btn btn-outline" type="button">
-                    Unggah File
-                  </button>
+                  <button id="documentations-input-button" class="btn btn-outline" type="button">Unggah File</button>
                   <input
                     id="documentations-input"
                     name="documentations"
                     type="file"
                     accept="image/*"
                     multiple
-                    hidden="hidden"
-                    aria-multiline="true"
-                    aria-describedby="documentations-more-info"
+                    hidden
                   >
-                  <button id="open-documentations-camera-button" class="btn btn-outline" type="button">
-                    Buka Kamera
-                  </button>
+                  <button id="open-documentations-camera-button" class="btn btn-outline" type="button">Buka Kamera</button>
                 </div>
                 <div id="camera-container" class="new-form__camera__container">
                   <select id="camera-select" class="camera-select"></select>
-                  <video id="camera-video" class="new-form__camera__video">
-                    Video stream not available.
-                  </video>
+                  <video id="camera-video" class="new-form__camera__video">Video stream not available.</video>
                   <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
                   <div class="new-form__camera__tools">
-                    <button id="camera-take-button" class="btn" type="button">
-                      Ambil Gambar
-                    </button>
-                    <div id="file-uploaded">Jika ingin menghapus file telampir, klik saja pada filenya.</div>
+                    <button id="camera-take-button" class="btn" type="button">Ambil Gambar</button>
+                    <div id="file-uploaded">Jika ingin menghapus file terlampir, klik saja pada filenya.</div>
                   </div>
                 </div>
                 <ul id="documentations-taken-list" class="new-form__documentations__outputs"></ul>
@@ -87,7 +74,6 @@ export default class NewPage {
             <div class="form-control">
               <label for="new-form__location__title">Silahkan Masukkan Lokasi.</label>
               <div id="location-more-info">Anda dapat menggeser marker untuk menentukan lokasi yang tepat.</div>
-              
               <div class="new-form__location__container">
                 <div class="new-form__location__map__container">
                   <div id="map" class="new-form__location__map"></div>
@@ -99,6 +85,7 @@ export default class NewPage {
                 </div>
               </div>
             </div>
+
             <div class="form-buttons">
               <span id="submit-button-container">
                 <button class="btn" type="submit">Bagikan Cerita Anda!</button>
@@ -112,15 +99,11 @@ export default class NewPage {
   }
 
   async cleanup() {
-    if (this.#camera) {
-      this.#camera.stop();
-    }
-
+    if (this.#camera) this.#camera.stop();
     this.#takenDocumentations.forEach((pic) => {
       if (pic.url) URL.revokeObjectURL(pic.url);
     });
     this.#takenDocumentations = [];
-
     if (this.#map) {
       this.#map.remove();
       this.#map = null;
@@ -129,16 +112,10 @@ export default class NewPage {
   }
 
   async afterRender() {
-    this.#presenter = new NewPresenter({
-      view: this,
-      model: StoryAPI,
-    });
+    this.#presenter = new NewPresenter({ view: this, model: StoryAPI });
     this.#takenDocumentations = [];
-
     this.#setupCamera();
-
     this.#setupForm();
-
     await this.#initMap();
   }
 
@@ -163,7 +140,6 @@ export default class NewPage {
           cameraContainer.classList.add("open");
 
           await this.#camera.launch();
-
           document.getElementById("camera-canvas").style.display = "none";
           document.getElementById("camera-take-button").onclick = async () => {
             const image = await this.#camera.takePicture();
@@ -187,10 +163,7 @@ export default class NewPage {
 
   async #initMap() {
     const mapElement = document.getElementById("map");
-    if (!mapElement) {
-      console.warn("Map container not found, skip initialization");
-      return;
-    }
+    if (!mapElement) return;
 
     try {
       this.showMapLoading();
@@ -209,21 +182,17 @@ export default class NewPage {
 
       this.#marker = this.#map.addMarker(
         [centerCoordinate.latitude, centerCoordinate.longitude],
-        {
-          draggable: true,
-          autoPan: true,
-          zoomOnClick: false,
-        },
+        { draggable: true, autoPan: true, zoomOnClick: false },
       );
 
-      this.#marker.addEventListener("move", (event) => {
-        const coordinate = event.target.getLatLng();
-        this.#updateLatLngInput(coordinate.lat, coordinate.lng);
+      this.#marker.addEventListener("move", (e) => {
+        const { lat, lng } = e.target.getLatLng();
+        this.#updateLatLngInput(lat, lng);
       });
 
-      this.#map.addMapEventListener("click", (event) => {
-        this.#marker.setLatLng(event.latlng);
-        this.#updateLatLngInput(event.latlng.lat, event.latlng.lng);
+      this.#map.addMapEventListener("click", (e) => {
+        this.#marker.setLatLng(e.latlng);
+        this.#updateLatLngInput(e.latlng.lat, e.latlng.lng);
       });
     } catch (error) {
       console.error("Map initialization error:", error);
@@ -232,21 +201,20 @@ export default class NewPage {
     }
   }
 
-  #updateLatLngInput(latitude, longitude) {
+  #updateLatLngInput(lat, lng) {
     const latInput = this.#form?.elements?.namedItem("latitude");
     const lngInput = this.#form?.elements?.namedItem("longitude");
     if (latInput && lngInput) {
-      latInput.value = latitude;
-      lngInput.value = longitude;
+      latInput.value = lat;
+      lngInput.value = lng;
     }
   }
 
   async #setupForm() {
     this.#form = document.getElementById("new-form");
 
-    this.#form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
+    this.#form.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const data = {
         description: this.#form.elements.namedItem("description").value,
         photo: this.#takenDocumentations[0]?.blob,
@@ -254,20 +222,13 @@ export default class NewPage {
         lon: parseFloat(this.#form.elements.namedItem("longitude").value),
       };
 
-      if (!data.description) {
+      if (!data.description || !data.photo) {
         Swal.fire({
           icon: "warning",
           title: "Perhatian",
-          text: "Deskripsi wajib diisi!",
-          confirmButtonText: "Oke",
-        });
-        return;
-      }
-      if (!data.photo) {
-        Swal.fire({
-          icon: "warning",
-          title: "Perhatian",
-          text: "Foto wajib diupload!",
+          text: !data.description
+            ? "Deskripsi wajib diisi!"
+            : "Foto wajib diupload!",
           confirmButtonText: "Oke",
         });
         return;
@@ -292,11 +253,7 @@ export default class NewPage {
 
         for (const file of files) {
           if (file.type.startsWith("image/")) {
-            try {
-              await this.#addTakenPicture(file);
-            } catch (error) {
-              console.error("Error processing file:", file.name, error);
-            }
+            await this.#addTakenPicture(file);
           }
         }
 
@@ -309,11 +266,15 @@ export default class NewPage {
     try {
       let blob = image;
 
-      if (!(image instanceof Blob)) {
-        if (typeof image === "string") {
-          blob = await convertBase64ToBlob(image, "image/png");
-        } else {
-          throw new Error("Invalid image type");
+      if (image.size > 1 * 1024 * 1024) {
+        blob = await this.compressImage(image);
+      } else {
+        if (!(image instanceof Blob)) {
+          if (typeof image === "string") {
+            blob = await convertBase64ToBlob(image, "image/png");
+          } else {
+            throw new Error("Invalid image type");
+          }
         }
       }
 
@@ -321,79 +282,77 @@ export default class NewPage {
         throw new Error("Invalid blob created");
       }
 
-      const newDocumentation = {
+      const documentation = {
         id: `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-        blob: blob,
+        blob,
       };
 
-      this.#takenDocumentations = [
-        ...this.#takenDocumentations,
-        newDocumentation,
-      ];
+      this.#takenDocumentations = [documentation];
       return true;
-    } catch (error) {
-      console.error("Error adding taken picture:", error);
+    } catch (err) {
+      console.error("Error adding taken picture:", err);
       return false;
     }
   }
 
+  async compressImage(file, quality = 0.7) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.src = e.target.result;
+      };
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+
   async #populateTakenPictures() {
     const html = await Promise.all(
-      this.#takenDocumentations.map(async (picture, currentIndex) => {
-        if (!(picture.blob instanceof Blob)) {
-          console.error("Invalid blob:", picture.blob);
-          return "";
-        }
-
-        try {
-          const imageUrl = URL.createObjectURL(picture.blob);
-          return `
+      this.#takenDocumentations.map(async (pic, index) => {
+        const url = URL.createObjectURL(pic.blob);
+        pic.url = url;
+        return `
           <li class="new-form__documentations__outputs-item">
-            <button type="button" data-deletepictureid="${picture.id}" class="new-form__documentations__outputs-item__delete-btn">
-              <img src="${imageUrl}" alt="Dokumentasi ke-${currentIndex + 1}">
+            <button type="button" data-deletepictureid="${pic.id}" class="new-form__documentations__outputs-item__delete-btn">
+              <img src="${url}" alt="Dokumentasi ke-${index + 1}">
             </button>
           </li>
         `;
-        } catch (error) {
-          console.error("Error creating object URL:", error);
-          return "";
-        }
       }),
     );
 
     document.getElementById("documentations-taken-list").innerHTML =
       html.join("");
 
-    document
-      .querySelectorAll("button[data-deletepictureid]")
-      .forEach((button) =>
-        button.addEventListener("click", (event) => {
-          const pictureId = event.currentTarget.dataset.deletepictureid;
-
-          const deleted = this.#removePicture(pictureId);
-          if (!deleted) {
-            console.log(`Picture with id ${pictureId} was not found`);
-          }
-
-          this.#populateTakenPictures();
-        }),
-      );
+    document.querySelectorAll("button[data-deletepictureid]").forEach((btn) =>
+      btn.addEventListener("click", (e) => {
+        const picId = e.currentTarget.dataset.deletepictureid;
+        this.#removePicture(picId);
+        this.#populateTakenPictures();
+      }),
+    );
   }
 
   #removePicture(id) {
-    const selectedPicture = this.#takenDocumentations.find((picture) => {
-      return picture.id == id;
-    });
-
-    if (!selectedPicture) {
-      return null;
+    const index = this.#takenDocumentations.findIndex((p) => p.id === id);
+    if (index !== -1) {
+      const [removed] = this.#takenDocumentations.splice(index, 1);
+      if (removed.url) URL.revokeObjectURL(removed.url);
+      return true;
     }
-
-    this.#takenDocumentations = this.#takenDocumentations.filter((picture) => {
-      return picture.id != selectedPicture.id;
-    });
-
-    return selectedPicture;
+    return false;
   }
 
   storeSuccessfully(message) {
@@ -419,6 +378,8 @@ export default class NewPage {
 
   clearForm() {
     this.#form.reset();
+    this.#takenDocumentations = [];
+    document.getElementById("documentations-taken-list").innerHTML = "";
   }
 
   showMapLoading() {
