@@ -40,14 +40,26 @@ export default class Camera {
     this.#videoElement.oncanplay = () => {
       if (this.#streaming) return;
 
-      this.#width = this.#videoElement.videoWidth;
-      this.#height = this.#videoElement.videoHeight;
+      const originalWidth = this.#videoElement.videoWidth;
+      const originalHeight = this.#videoElement.videoHeight;
+
+      const maxWidth = 640;
+      if (originalWidth > maxWidth) {
+        this.#width = maxWidth;
+        this.#height = (originalHeight / originalWidth) * maxWidth;
+      } else {
+        this.#width = originalWidth;
+        this.#height = originalHeight;
+      }
 
       this.#canvasElement.setAttribute("width", this.#width);
       this.#canvasElement.setAttribute("height", this.#height);
 
       this.#videoElement.setAttribute("width", this.#width);
       this.#videoElement.setAttribute("height", this.#height);
+
+      console.log(" Camera ~ #width:", this.#width);
+      console.log(" Camera ~ #height:", this.#height);
 
       this.#streaming = true;
     };

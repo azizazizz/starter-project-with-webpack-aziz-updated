@@ -495,13 +495,14 @@ header {
 .new-form__camera__video,
 .new-form__camera__canvas {
   width: 100%;
-  height: auto;
+  max-width: 640px;
   aspect-ratio: 4 / 3;
   border-radius: 0.5rem;
-  background-color: #2c2c2c;
-  box-shadow: 0 0 10px rgba(255, 87, 34, 0.2);
-  margin-top: 1rem;
+  background-color: #111;
   object-fit: cover;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 0 5px #ff4500;
 }
 
 .new-form__camera__canvas {
