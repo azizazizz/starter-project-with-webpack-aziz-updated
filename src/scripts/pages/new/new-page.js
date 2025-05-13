@@ -63,7 +63,7 @@ export default class NewPage {
                   <video id="camera-video" class="new-form__camera__video">Video stream not available.</video>
                   <canvas id="camera-canvas" class="new-form__camera__canvas"></canvas>
                   <div class="new-form__camera__tools">
-                    <button id="camera-take-button" class="btn" type="button">Ambil Gambar</button>
+                    <button id="camera-take-button" class="btn btn-outline" type="button">Ambil Gambar</button>
                     <div id="file-uploaded">Jika ingin menghapus file terlampir, klik saja pada filenya.</div>
                   </div>
                 </div>
@@ -86,10 +86,8 @@ export default class NewPage {
               </div>
             </div>
 
-            <div class="form-buttons">
-              <span id="submit-button-container">
-                <button class="btn" type="submit">Bagikan Cerita Anda!</button>
-              </span>
+            <div class="form-buttons" id="submit-button-container">
+              <button class="btn btn-outline" type="submit">Bagikan Cerita Anda!</button>
               <a class="btn btn-outline" href="#/">Batal</a>
             </div>
           </form>
@@ -295,7 +293,7 @@ export default class NewPage {
     }
   }
 
-  async compressImage(file, quality = 0.7) {
+  async compressImage(file, quality = 0.8) {
     return new Promise((resolve) => {
       const img = new Image();
       const reader = new FileReader();
@@ -393,15 +391,15 @@ export default class NewPage {
 
   showSubmitLoadingButton() {
     document.getElementById("submit-button-container").innerHTML = `
-      <button class="btn" type="submit" disabled>
-        <i class="fas fa-spinner fa-spin"></i> Bagikan Cerita Anda!
+     <button class="btn btn-outline" type="submit" disabled>
+        <i class="fas fa-spinner fa-spin"></i>  Sedang Membagikan Cerita...
       </button>
     `;
   }
 
   hideSubmitLoadingButton() {
     document.getElementById("submit-button-container").innerHTML = `
-      <button class="btn" type="submit">Bagikan Cerita Anda!</button>
+     <button class="btn btn-outline" type="submit">Bagikan Cerita Anda!</button>
     `;
   }
 }

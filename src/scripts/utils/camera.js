@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export default class Camera {
   #currentStream;
   #streaming = false;
@@ -158,7 +160,13 @@ export default class Camera {
 
   async takePicture() {
     if (!this.#streaming || !this.#videoElement) {
-      throw new Error("Camera is not active");
+      Swal.fire({
+        title: "Kamera belum aktif",
+        text: "Silakan buka kamera terlebih dahulu.",
+        icon: "warning",
+        confirmButtonText: "Oke",
+      });
+      return;
     }
 
     const videoWidth = this.#videoElement.videoWidth;
